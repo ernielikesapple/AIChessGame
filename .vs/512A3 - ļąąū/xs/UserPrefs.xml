@@ -1,0 +1,36 @@
+﻿<Properties>
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/Scripts/Chessman.cs">
+    <Files>
+      <File FileName="Assets/Scripts/BoardManager.cs" Line="53" Column="32" />
+      <File FileName="Assets/Scripts/Bishop.cs" />
+      <File FileName="Assets/Scripts/Chessman.cs" Line="22" Column="1" />
+      <File FileName="Assets/Scripts/Horse.cs" />
+      <File FileName="Assets/Scripts/King.cs" />
+      <File FileName="Assets/Scripts/Pawn.cs" />
+      <File FileName="Assets/Scripts/Queen.cs" />
+      <File FileName="Assets/Scripts/Rook.cs" />
+    </Files>
+    <Pads>
+      <Pad Id="ProjectPad">
+        <State name="__root__">
+          <Node name="512A3 - ļąąū" expanded="True">
+            <Node name="Assembly-CSharp" expanded="True">
+              <Node name="Assets" expanded="True">
+                <Node name="Scripts" expanded="True">
+                  <Node name="Chessman.cs" selected="True" />
+                </Node>
+                <Node name="Tiny Chess" expanded="True" />
+              </Node>
+            </Node>
+          </Node>
+        </State>
+      </Pad>
+    </Pads>
+  </MonoDevelop.Ide.Workbench>
+  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
+  <MonoDevelop.Ide.DebuggingService.Breakpoints>
+    <BreakpointStore />
+  </MonoDevelop.Ide.DebuggingService.Breakpoints>
+  <MultiItemStartupConfigurations />
+</Properties>
