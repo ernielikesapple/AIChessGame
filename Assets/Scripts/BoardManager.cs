@@ -79,7 +79,8 @@ public class BoardManager : MonoBehaviour
                 //If it is the King
                 if (c.GetType() == typeof(King))
                 {
-                    //End the game
+                    EndGame();
+                    //Rerecord the game
                     return;
                 }
                 activeChessman.Remove(c.gameObject);
@@ -215,5 +216,18 @@ public class BoardManager : MonoBehaviour
             selectionX = -1;
             selectionY = -1;
         }
+    }
+    private void EndGame()
+    {
+        if (isWhiteTurn)
+            Debug.Log("White team wins !!!");
+        else
+            Debug.Log("Black team wins !!!");
+        foreach (GameObject go in activeChessman)
+            Destroy(go);
+        //Rebegin the game and white piece first /who wins who goes first if not write "isWhiteTurn = true;" 
+        isWhiteTurn = true;
+        BoardHighlights.Instance.HideHighlights();
+        SpawnAllChessmans();
     }
 }
