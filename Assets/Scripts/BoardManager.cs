@@ -6,6 +6,10 @@ using UnityEngine.UIElements;
 
 public class BoardManager : MonoBehaviour
 {
+    public static BoardManager Instance { set; get; }
+    private bool[,] allowedMoves { set; get; }
+
+
     public Chessman[,] Chessmans { set; get; }  //Chessman array and a property
     private Chessman selectedChessman;
    
@@ -24,6 +28,7 @@ public class BoardManager : MonoBehaviour
 
     private void Start()
     {
+        Instance = this;
         SpawnAllChessmans();
     }
 
@@ -56,18 +61,39 @@ public class BoardManager : MonoBehaviour
             return;
         if (Chessmans[x, y].isWhite != isWhiteTurn)// Once pick a black piece while it is the white turn so that does not work
             return;
+        allowedMoves = Chessmans[x, y].PossibleMove();
         selectedChessman = Chessmans[x, y];
+        BoardHighlights.Instance.HighlightAllowedMoves(allowedMoves);
     }
     
     private void MoveChessman(int x,int y)
     {
-        if (selectedChessman.PossibleMove(x, y))
+        if (allowedMoves[x,y])
         {
+            Chessman c = Chessmans[x, y];
+            
+            if(c != null && c.isWhite != isWhiteTurn)
+            {
+                //Capture a piece
+
+                //If it is the King
+                if (c.GetType() == typeof(King))
+                {
+                    //End the game
+                    return;
+                }
+                activeChessman.Remove(c.gameObject);
+                Destroy(c.gameObject);
+            }
+
             Chessmans[selectedChessman.CurrentX, selectedChessman.CurrentY] = null;
             selectedChessman.transform.position = GetTileCenter(x, y);
+            selectedChessman.SetPosition(x, y);
             Chessmans[x, y] = selectedChessman;
             isWhiteTurn = !isWhiteTurn;//Black piece turn if white piece has been moved(swap turn)
         }
+
+        BoardHighlights.Instance.HideHighlights();
         selectedChessman = null;//Select next Chessman
     }
 
