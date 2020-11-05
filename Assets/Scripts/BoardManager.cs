@@ -22,6 +22,8 @@ public class BoardManager : MonoBehaviour
     public List<GameObject> chessmanPrefabs;
     private List<GameObject> activeChessman = new List<GameObject>();
 
+    public int[] EnPassantMove { set; get; }
+
     /*private Quaternion orientation = Quaternion.Euler(0, 0, 0);*/
 
     public bool isWhiteTurn = true;
@@ -86,12 +88,68 @@ public class BoardManager : MonoBehaviour
                 activeChessman.Remove(c.gameObject);
                 Destroy(c.gameObject);
             }
+            //EnPassantMove(The first nove of the black Pawn is two square, then the white Pawn can remove it)
+            if(x == EnPassantMove[0] && y == EnPassantMove[1])
+            {
+                //White turn(black Pawn move 2 squares)
+                if(isWhiteTurn)
+                {
+                    c = Chessmans[x, y - 1];
+                    activeChessman.Remove(c.gameObject);
+                    Destroy(c.gameObject);
+                }
+                //Black turn(white Pawn move 2 squares)
+                else
+                {
+                    c = Chessmans[x, y + 1];
+                    activeChessman.Remove(c.gameObject);
+                    Destroy(c.gameObject);
+                }
+            }
+            EnPassantMove[0] = -1;
+            EnPassantMove[1] = -1;
+            if(selectedChessman.GetType() == typeof(Pawn))
+            {
+                if(y == 7)
+                {
+                    activeChessman.Remove(selectedChessman.gameObject);
+                    Destroy(selectedChessman.gameObject);
+                    SpawnChessman(1, x, y);
+                    selectedChessman = Chessmans[x, y];
+                }
+                else if (y == 0)
+                {
+                    activeChessman.Remove(selectedChessman.gameObject);
+                    Destroy(selectedChessman.gameObject);
+                    SpawnChessman(7, x, y);
+                    selectedChessman = Chessmans[x, y];
+                }
+
+                //White Pawn
+                if (selectedChessman.CurrentY == 1 && y == 3)
+                {
+                    //Possible move of the black Pawn 
+                    EnPassantMove[0] = x;
+                    EnPassantMove[1] = y - 1;
+                }
+                //Black Pawn
+                else if (selectedChessman.CurrentY == 6 && y == 4)
+                {
+                    //Possible move of the white Pawn
+                    EnPassantMove[0] = x;
+                    EnPassantMove[1] = y + 1;
+                }
+            }
+
+
+
+
 
             Chessmans[selectedChessman.CurrentX, selectedChessman.CurrentY] = null;
             selectedChessman.transform.position = GetTileCenter(x, y);
             selectedChessman.SetPosition(x, y);
             Chessmans[x, y] = selectedChessman;
-            isWhiteTurn = !isWhiteTurn;//Black piece turn if white piece has been moved(swap turn)
+            isWhiteTurn = !isWhiteTurn;//Black piece turn if white piece has been moved(switch turn)
         }
 
         BoardHighlights.Instance.HideHighlights();
@@ -139,6 +197,7 @@ public class BoardManager : MonoBehaviour
     {
         activeChessman = new List<GameObject>();
         Chessmans = new Chessman[8, 8];
+        EnPassantMove = new int[2] { -1, -1 };
 
         //Spawn the white team
 
