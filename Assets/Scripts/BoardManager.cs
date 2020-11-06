@@ -24,6 +24,8 @@ public class BoardManager : MonoBehaviour
 
     public int[] EnPassantMove { set; get; }
 
+    AlphaBeta ab = new AlphaBeta();
+
     /*private Quaternion orientation = Quaternion.Euler(0, 0, 0);*/
 
     public bool isWhiteTurn = true;
@@ -149,13 +151,13 @@ public class BoardManager : MonoBehaviour
             selectedChessman.transform.position = GetTileCenter(x, y);
             selectedChessman.SetPosition(x, y);
             Chessmans[x, y] = selectedChessman;
-            isWhiteTurn = !isWhiteTurn;//Black piece turn if white piece has been moved(switch turn)
+
+            doAIMove();
         }
 
         BoardHighlights.Instance.HideHighlights();
         selectedChessman = null;//Select next Chessman
     }
-
     
     private void DrawChessBoard()
     {
@@ -289,4 +291,26 @@ public class BoardManager : MonoBehaviour
         BoardHighlights.Instance.HideHighlights();
         SpawnAllChessmans();
     }
+
+
+
+
+    private void doAIMove() {
+
+        Debug.Log("111");
+
+        // todo: get current state of the booard, pass the value into AI class
+
+        // todo: get the return value for the from the class
+
+        // Move move = ab.GetMove();  // 核心当前ai玩家要走的棋子坐标， 主角棋子被ai玩家吃掉的棋子的坐标
+
+        // todo: add logic to move the piece , similiar to the logic in MoveChessman method
+        //_DoAIMove(move);
+
+
+        
+        isWhiteTurn = !isWhiteTurn;//Black piece turn if white piece has been moved(switch turn)
+    }
+
 }

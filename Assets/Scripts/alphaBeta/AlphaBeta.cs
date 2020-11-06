@@ -22,14 +22,17 @@ public class AlphaBeta
     public Move GetMove()
     {
         _board = Board.Instance;
+
         bestMove = _CreateMove(_board.GetTileFromBoard(new Vector2(0, 0)), _board.GetTileFromBoard(new Vector2(0, 0)));
+
+
         AB(maxDepth, -100000000, 1000000000, true);
-        return bestMove;
+        return bestMove;  // 整个类的输出借口， 输出核心数据， 
     }
 
     int AB(int depth, int alpha, int beta, bool max)
     {
-        _GetBoardState();
+        _GetBoardState();  // class input，
 
         if (depth == 0)
         {
@@ -160,7 +163,7 @@ public class AlphaBeta
         return Mathf.RoundToInt(pieceDifference * 100);
     }
 
-    void _GetBoardState()
+    void _GetBoardState()  // 相当于输入参数
     {
         _blackPieces.Clear();
         _whitePieces.Clear();
@@ -194,7 +197,7 @@ public class AlphaBeta
         }
     }
 
-    Move _CreateMove(Tile tile, Tile move)
+    Move _CreateMove(Tile tile, Tile move) // current chessman, 被吃掉的chess man
     {
         Move tempMove = new Move();
         tempMove.firstPosition = tile;

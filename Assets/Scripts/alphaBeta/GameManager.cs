@@ -27,7 +27,7 @@ public class GameManager : MonoBehaviour
         }
         else if (!playerTurn && timer >= 3)
         {
-            Move move = ab.GetMove();
+            Move move = ab.GetMove();  // 核心当前ai玩家要走的棋子坐标， 主角棋子被ai玩家吃掉的棋子的坐标
             _DoAIMove(move);
             timer = 0;
         }
@@ -37,8 +37,8 @@ public class GameManager : MonoBehaviour
 
     void _DoAIMove(Move move)
     {
-        Tile firstPosition = move.firstPosition;
-        Tile secondPosition = move.secondPosition;
+        Tile firstPosition = move.firstPosition; // 返回结果中 核心当前ai玩家要走的棋子坐标
+        Tile secondPosition = move.secondPosition; // 返回结果中 主角棋子被ai玩家吃掉的棋子的坐标
 
         if (secondPosition.CurrentPiece && secondPosition.CurrentPiece.Type == Piece.pieceType.KING)
         {
