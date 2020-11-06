@@ -72,7 +72,7 @@ public class BoardManager : MonoBehaviour
     {
         if (allowedMoves[x,y])
         {
-            Chessman c = Chessmans[x, y];
+            Chessman c = Chessmans[x, y]; // 落子点
             
             if(c != null && c.isWhite != isWhiteTurn)
             {
