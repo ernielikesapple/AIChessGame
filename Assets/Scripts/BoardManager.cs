@@ -155,7 +155,9 @@ public class BoardManager : MonoBehaviour
             Chessmans[selectedChessman.CurrentX, selectedChessman.CurrentY] = null;
             selectedChessman.transform.position = GetTileCenter(x, y);
 
-            selectedChessman.SetPosition(x, y); // todo: change current logic to nav mesh agent mode
+            selectedChessman.SetPosition(x, y); // todo: nav mesh agent 逻辑 change current logic to nav mesh agent mode
+            // todo: add nav mesh agent to selectedChessman
+
             Chessmans[x, y] = selectedChessman;
 
             isWhiteTurn = !isWhiteTurn;
