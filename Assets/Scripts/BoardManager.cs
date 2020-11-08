@@ -9,7 +9,6 @@ public class BoardManager : MonoBehaviour
     public static BoardManager Instance { set; get; }
     private bool[,] allowedMoves { set; get; }
 
-
     public Chessman[,] Chessmans { set; get; }  //Chessman array and a property
     private Chessman selectedChessman;
    
@@ -65,13 +64,17 @@ public class BoardManager : MonoBehaviour
             return;
         if (Chessmans[x, y].isWhite != isWhiteTurn)// Once pick a black piece while it is the white turn so that does not work
             return;
-        allowedMoves = Chessmans[x, y].PossibleMove();
+        allowedMoves = Chessmans[x, y].PossibleMove();  // possible moves is a 8*8 2d array initial value false， 重要🌟：since this function is override by the subchild , so it wont return orginal 8*8 false bool matrix , but a meaning one followed the rules
+
         selectedChessman = Chessmans[x, y];
+
         BoardHighlights.Instance.HighlightAllowedMoves(allowedMoves);
+
     }
-    
-    private void MoveChessman(int x,int y)
+
+    private void MoveChessman(int x,int y)  // 棋子落点坐标
     {
+
         if (allowedMoves[x,y])
         {
             Chessman c = Chessmans[x, y]; // 落子点
@@ -79,7 +82,7 @@ public class BoardManager : MonoBehaviour
             if(c != null && c.isWhite != isWhiteTurn)
             {
                 //Capture a piece
-
+                
                 //If it is the King
                 if (c.GetType() == typeof(King))
                 {
@@ -296,10 +299,8 @@ public class BoardManager : MonoBehaviour
 
 
     private void doAIMove() {
-
-        Debug.Log("111");
-
-        // todo: get current state of the booard, pass the value into AI class
+        Debug.Log(activeChessman.Count);
+        // todo: get current state of the board, pass the value into AI class
 
         // todo: get the return value for the from the class
 
@@ -309,7 +310,7 @@ public class BoardManager : MonoBehaviour
         //_DoAIMove(move);
 
 
-        
+
         isWhiteTurn = !isWhiteTurn;//Black piece turn if white piece has been moved(switch turn)
     }
 

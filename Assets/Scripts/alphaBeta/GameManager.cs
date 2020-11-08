@@ -27,7 +27,7 @@ public class GameManager : MonoBehaviour
         }
         else if (!playerTurn && timer >= 3)
         {
-            Move move = ab.GetMove();  // 核心当前ai玩家要走的棋子坐标， 主角棋子被ai玩家吃掉的棋子的坐标
+            Move move = ab.GetMove();  //第一步 核心当前ai玩家要走的棋子坐标， 主角棋子被ai玩家吃掉的棋子的坐标
             _DoAIMove(move);
             timer = 0;
         }

@@ -25,7 +25,7 @@ public class BoardHighlights : MonoBehaviour
         }
         return go;
     }
-    public void HighlightAllowedMoves(bool[,] moves)
+    public void HighlightAllowedMoves(bool[,] moves)  // todo: extract the possble moves' x and y coord info, return it outside the functions to let it used by min max 
     {
         for (int i = 0; i < 8; i++)
         {

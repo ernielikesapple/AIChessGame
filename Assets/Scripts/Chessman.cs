@@ -14,7 +14,7 @@ public abstract class Chessman : MonoBehaviour
         CurrentY = y;
     }
 
-    public virtual bool[,] PossibleMove()
+    public virtual bool[,] PossibleMove()  // virtual keyword means, this function will be override by the child class to let the child class add more customized functions
     {
         return new bool[8,8];
     }

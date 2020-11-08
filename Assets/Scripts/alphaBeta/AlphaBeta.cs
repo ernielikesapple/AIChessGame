@@ -21,13 +21,13 @@ public class AlphaBeta
 
     public Move GetMove()
     {
-        _board = Board.Instance;
+        _board = Board.Instance; // step1: 获取当前棋盘上 敌我双方的棋子状态数值
 
         bestMove = _CreateMove(_board.GetTileFromBoard(new Vector2(0, 0)), _board.GetTileFromBoard(new Vector2(0, 0)));
 
 
         AB(maxDepth, -100000000, 1000000000, true);
-        return bestMove;  // 整个类的输出借口， 输出核心数据， 
+        return bestMove;  // 整个类的输出借口， 输出核心数据， 要走的棋子坐标， 落点坐标
     }
 
     int AB(int depth, int alpha, int beta, bool max)
@@ -165,6 +165,9 @@ public class AlphaBeta
 
     void _GetBoardState()  // 相当于输入参数
     {
+        // todo： 更新棋盘状态数值
+
+
         _blackPieces.Clear();
         _whitePieces.Clear();
         _blackScore = 0;

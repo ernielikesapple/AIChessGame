@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEditorInternal;
 using UnityEngine;
 
-public class Pawn : Chessman
+public class Pawn : Chessman // overridding chess man class to provide additional customized functions
 {
     public override bool[,] PossibleMove()
     {
