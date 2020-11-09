@@ -106,7 +106,7 @@ NavMeshSettings:
   m_BuildSettings:
     serializedVersion: 2
     agentTypeID: 0
-    agentRadius: 0.5
+    agentRadius: 0.1
     agentHeight: 2
     agentSlope: 45
     agentClimb: 0.4
@@ -114,7 +114,7 @@ NavMeshSettings:
     maxJumpAcrossDistance: 0
     minRegionArea: 2
     manualCellSize: 0
-    cellSize: 0.16666667
+    cellSize: 0.033333335
     manualTileSize: 0
     tileSize: 256
     accuratePlacement: 0
@@ -122,7 +122,7 @@ NavMeshSettings:
     preserveTilesOutsideBounds: 0
     debug:
       m_Flags: 0
-  m_NavMeshData: {fileID: 0}
+  m_NavMeshData: {fileID: 23800000, guid: d76414f6fd44dae47a223b130f6f5bb0, type: 2}
 --- !u!1 &539730005
 GameObject:
   m_ObjectHideFlags: 0
@@ -139,7 +139,7 @@ GameObject:
   m_TagString: Untagged
   m_Icon: {fileID: -964228994112308473, guid: 0000000000000000d000000000000000, type: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 8
   m_IsActive: 1
 --- !u!114 &539730006
 MonoBehaviour:
@@ -183,18 +183,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   chessmanPrefabs:
-  - {fileID: 7975055841451343251, guid: 7735e71d7e9272740b8175d66c2062ec, type: 3}
-  - {fileID: 1601417800831937232, guid: e034703c17bd80740ac3276d10745738, type: 3}
-  - {fileID: 7986761701163752603, guid: c60ca210020aa9f4aa453e4ed6bcf7ba, type: 3}
-  - {fileID: 3749776783159942461, guid: c27fd6b49c31fa54a9b1aa9298c515c9, type: 3}
-  - {fileID: 3115183454389527382, guid: e24d7f2cbf4208d4ba14528c0156b843, type: 3}
-  - {fileID: 4193417248269720573, guid: 47034729680f8b14c98353fd0b02dfb8, type: 3}
-  - {fileID: 2046859387336371878, guid: c89e5db5f081fe9478fe3052b95dd65b, type: 3}
-  - {fileID: 5619704072952707917, guid: f971a175ec870a54eb7c05caee8042d4, type: 3}
-  - {fileID: 8393783502959777790, guid: 4f11ba1f906417747bc7ac3f4760523d, type: 3}
-  - {fileID: 503996036481967170, guid: 8147f845b8377e04688e48cac5734153, type: 3}
-  - {fileID: 8555120806823166388, guid: 85f9c3ec4f96b304dbeadcf2373a424c, type: 3}
-  - {fileID: 1568997571186649219, guid: e066df36118c7a1409ab246676a2b8e0, type: 3}
+  - {fileID: 1189892643870634, guid: e928aa32286340f4c991367132d3d238, type: 3}
+  - {fileID: 1044751971961674, guid: e7251e75860370b4ba6e01ee9b85fdde, type: 3}
+  - {fileID: 1145061619818354, guid: 3c04176fe31dd2343b01ea7d3fbaf913, type: 3}
+  - {fileID: 1778680020080926, guid: 8a676a8d12bdeb2439abc9ab8bd6f428, type: 3}
+  - {fileID: 1985964522049728, guid: 1994b7c0fbb81e348be47a3e88ae1842, type: 3}
+  - {fileID: 1054443145016762, guid: f7118f496df0737438339acc21f7f224, type: 3}
+  - {fileID: 1491099858962454, guid: 635ed8be112f5724ba8d4b32844b7557, type: 3}
+  - {fileID: 1587134886509290, guid: c9fbf680cbbc1394890d117da10079ee, type: 3}
+  - {fileID: 1699609104537690, guid: 790e203b43244e2488d95192da02de8e, type: 3}
+  - {fileID: 1966521353940116, guid: c9a0c8d14495d174887ba19ab4536029, type: 3}
+  - {fileID: 1245213012106632, guid: 29f2368d4a191e44aa1d3ef930229d4d, type: 3}
+  - {fileID: 1635253307245532, guid: 4e6df7cbbcafef74bb3d1e08fb1b2ed8, type: 3}
   smartOpponent: 0
   isWhiteTurn: 1
 --- !u!1 &705507993
@@ -450,7 +450,7 @@ GameObject:
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 8
   m_IsActive: 1
 --- !u!65 &1732922217
 BoxCollider:

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
+using UnityEngine.AI;
 
 public class BoardManager : MonoBehaviour
 {
@@ -153,18 +154,30 @@ public class BoardManager : MonoBehaviour
             }
 
             Chessmans[selectedChessman.CurrentX, selectedChessman.CurrentY] = null;
-            selectedChessman.transform.position = GetTileCenter(x, y);
+            //selectedChessman.transform.position = GetTileCenter(x, y);原本代码
 
             selectedChessman.SetPosition(x, y); // todo: nav mesh agent 逻辑 change current logic to nav mesh agent mode
             // todo: add nav mesh agent to selectedChessman
 
+            NavMeshAgent agent = selectedChessman.GetComponent<NavMeshAgent>();
+            agent.destination = new Vector3(x + 0.5f, 0, y + 0.5f);
+            
+            Animator animator = selectedChessman.GetComponent<Animator>();
+            animator.SetBool("walking", true);
+          
+
+
+
             Chessmans[x, y] = selectedChessman;
+           
 
             isWhiteTurn = !isWhiteTurn;
+          
         }
 
         BoardHighlights.Instance.HideHighlights();
         selectedChessman = null;//Select next Chessman
+
     }
 
     private void DrawChessBoard()
