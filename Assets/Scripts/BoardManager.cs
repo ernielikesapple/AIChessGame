@@ -469,6 +469,14 @@ public class BoardManager : MonoBehaviour
 
         // todo: add logic to move the piece , similiar to the logic in MoveChessman method
         //_DoAIMove(move);
+
+
+        minMaxDealer minMaxDealerForBlackPiece = new minMaxDealer();
+
+        minMaxDealerForBlackPiece.minMaxCoreAlgorithm(activeChessman);
+
+
+
     }
 
 

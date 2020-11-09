@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class AlphaBeta 
+public class AlphaBeta // 输出内容： 黑方棋子x，y。。。黑方要走到的那个棋子的坐标。
 {
     int maxDepth = 4;
 
