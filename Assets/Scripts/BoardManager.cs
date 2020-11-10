@@ -8,10 +8,10 @@ using UnityEngine.AI;
 public class BoardManager : MonoBehaviour
 {
     public static BoardManager Instance { set; get; }
-    private bool[,] allowedMoves { set; get; }
+    public bool[,] allowedMoves { set; get; }
 
     public Chessman[,] Chessmans { set; get; }  //Chessman array and a property
-    private Chessman selectedChessman;
+    public Chessman selectedChessman;
    
     private const float TILE_SIZE = 1.0f;
     private const float TILE_OFFSET = 0.5f;
@@ -20,11 +20,12 @@ public class BoardManager : MonoBehaviour
     private int selectionY = -1;
 
     public List<GameObject> chessmanPrefabs;
-    private List<GameObject> activeChessman = new List<GameObject>();
+    public List<GameObject> activeChessman = new List<GameObject>();
 
     public int[] EnPassantMove { set; get; }
 
     public bool smartOpponent = false;
+    public bool smartOpponentDoingTrials = false;
     AlphaBeta ab = new AlphaBeta();
 
     /*private Quaternion orientation = Quaternion.Euler(0, 0, 0);*/
@@ -35,6 +36,9 @@ public class BoardManager : MonoBehaviour
     {
         Instance = this;
         SpawnAllChessmans();
+
+
+        smartOpponent = true; // test purpose;
     }
 
     private void Update()
@@ -75,13 +79,13 @@ public class BoardManager : MonoBehaviour
 
     }
 
-    private void MoveChessman(int x,int y)  // 棋子落点坐标
+    public void MoveChessman(int x,int y)  // 棋子落点坐标
     {
         MoveChessEssenceLogic(x, y);
         computerMove();
     }
 
-    private void MoveChessEssenceLogic(int x, int y) {
+    public void MoveChessEssenceLogic(int x, int y) {
         if (allowedMoves[x, y])
         {
             Chessman c = Chessmans[x, y]; // 落子点
@@ -299,7 +303,7 @@ public class BoardManager : MonoBehaviour
             selectionY = -1;
         }
     }
-    private void EndGame()
+    public void EndGame()
     {
         if (isWhiteTurn)
             Debug.Log("White team wins !!!");
@@ -322,7 +326,6 @@ public class BoardManager : MonoBehaviour
             doRandomMove();   // add choose random move or real ai move type
         }
         else {
-
             doAIMove();
         }
         isWhiteTurn = !isWhiteTurn;//Black piece turn if white piece has been moved(switch turn)
@@ -473,9 +476,10 @@ public class BoardManager : MonoBehaviour
 
         minMaxDealer minMaxDealerForBlackPiece = new minMaxDealer();
 
-        minMaxDealerForBlackPiece.minMaxCoreAlgorithm(activeChessman);
+        minMaxDealerForBlackPiece.minMaxCoreAlgorithm();
 
-
+        // todo: get the return value from minMaxDealerForBlackPiece let it pass to MoveChessEssenceLogic
+        //MoveChessEssenceLogic((int)possibleMovesGrids[randomMove].x, (int)possibleMovesGrids[randomMove].y);
 
     }
 

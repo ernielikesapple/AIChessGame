@@ -5,7 +5,6 @@ using UnityEngine;
 public class minMaxDealer 
 {
     int maxDepth = 4;
-    List<GameObject> activeChessmanVarFromTheRealGame; // represent current states of the board
 
     List<Chessman> _blackPieces = new List<Chessman>();   // for a certain round, current left black pieces
     List<Chessman> _whitePieces = new List<Chessman>();   // for a certain round, current left white pieces
@@ -14,11 +13,10 @@ public class minMaxDealer
     int _blackScore = 0;
 
 
-
     private bool[,] allowedMoves { set; get; } // check if the move on the grid is allowed
 
-    public void minMaxCoreAlgorithm(List<GameObject> activeChessman) {
-        activeChessmanVarFromTheRealGame = activeChessman;
+    public void minMaxCoreAlgorithm() {
+        
 
         AB(maxDepth, -100000000, 1000000000, true);
 
@@ -102,7 +100,8 @@ public class minMaxDealer
         _blackScore = 0;
         _whiteScore = 0;
 
-        foreach (GameObject activeChessPiece in activeChessmanVarFromTheRealGame)
+        
+        foreach (GameObject activeChessPiece in BoardManager.Instance.activeChessman)  // BoardManager.Instance.activeChessman use the real board chess man to move around and check
         {
             Chessman cm = activeChessPiece.GetComponent<Chessman>();
             if (cm.isWhite == false) //黑子
@@ -237,115 +236,5 @@ public class minMaxDealer
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-    private void MoveChessEssenceLogic(int x, int y)
-    {
-        if (allowedMoves[x, y])
-        {
-            Chessman c = Chessmans[x, y]; // 落子点
-
-            if (c != null && c.isWhite != isWhiteTurn)
-            {
-                //Capture a piece
-
-                //If it is the King
-                if (c.GetType() == typeof(King))
-                {
-                    EndGame();
-                    //Rerecord the game
-                    return;
-                }
-                activeChessman.Remove(c.gameObject);
-                
-            }
-            //EnPassantMove(The first nove of the black Pawn is two square, then the white Pawn can remove it)
-            if (x == EnPassantMove[0] && y == EnPassantMove[1])
-            {
-                //White turn(black Pawn move 2 squares)
-                if (isWhiteTurn)
-                {
-                    c = Chessmans[x, y - 1];
-                    activeChessman.Remove(c.gameObject);
-                    
-                }
-                //Black turn(white Pawn move 2 squares)
-                else
-                {
-                    c = Chessmans[x, y + 1];
-                    activeChessman.Remove(c.gameObject);
-                    
-                }
-            }
-            EnPassantMove[0] = -1;
-            EnPassantMove[1] = -1;
-            if (selectedChessman.GetType() == typeof(Pawn))
-            {
-                if (y == 7)
-                {
-                    activeChessman.Remove(selectedChessman.gameObject);
-                    Destroy(selectedChessman.gameObject);
-                    SpawnChessman(1, x, y);
-                    selectedChessman = Chessmans[x, y];
-                }
-                else if (y == 0)
-                {
-                    activeChessman.Remove(selectedChessman.gameObject);
-                    Destroy(selectedChessman.gameObject);
-                    SpawnChessman(7, x, y);
-                    selectedChessman = Chessmans[x, y];
-                }
-
-                //White Pawn
-                if (selectedChessman.CurrentY == 1 && y == 3)
-                {
-                    //Possible move of the black Pawn 
-                    EnPassantMove[0] = x;
-                    EnPassantMove[1] = y - 1;
-                }
-                //Black Pawn
-                else if (selectedChessman.CurrentY == 6 && y == 4)
-                {
-                    //Possible move of the white Pawn
-                    EnPassantMove[0] = x;
-                    EnPassantMove[1] = y + 1;
-                }
-            }
-
-            Chessmans[selectedChessman.CurrentX, selectedChessman.CurrentY] = null;
-            //selectedChessman.transform.position = GetTileCenter(x, y);原本代码
-
-            selectedChessman.SetPosition(x, y); // todo: nav mesh agent 逻辑 change current logic to nav mesh agent mode
-            // todo: add nav mesh agent to selectedChessman
-
-            UnityEngine.AI.NavMeshAgent agent = selectedChessman.GetComponent<UnityEngine.AI.NavMeshAgent>();
-            agent.destination = new Vector3(x + 0.5f, 0, y + 0.5f);
-
-            Animator animator = selectedChessman.GetComponent<Animator>();
-            animator.SetBool("walking", true);
-
-
-
-
-            Chessmans[x, y] = selectedChessman;
-
-
-            isWhiteTurn = !isWhiteTurn;
-
-        }
-
-        BoardHighlights.Instance.HideHighlights();
-        selectedChessman = null;//Select next Chessman
-
-    }
+   
 }
