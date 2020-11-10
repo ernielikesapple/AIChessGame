@@ -426,7 +426,7 @@ public class BoardManager : MonoBehaviour
             }
         }
     }
-    private List<Vector2> chooseArandBlackPieceToMove(string movePieceType) {  // 从randomMove中抽离出来的代码，为了防止重复
+    public List<Vector2> chooseArandBlackPieceToMove(string movePieceType) {  // 从randomMove中抽离出来的代码，为了防止重复
         foreach (GameObject activeChessPiece in activeChessman)
         {
             Chessman cm = activeChessPiece.GetComponent<Chessman>();
@@ -456,6 +456,7 @@ public class BoardManager : MonoBehaviour
         return possibleMovesGrids;
     }
 
+
     private void doAIMove() {
         // todo: get current state of the board, pass the value into AI class
 
@@ -484,6 +485,67 @@ public class BoardManager : MonoBehaviour
     }
 
 
+
+    public void ReSpawnAllChessmansAccordingToCurrentChessmans(Chessman[,] currentChessmans)
+    {
+
+
+        activeChessman = 
+        Chessmans = new Chessman[8, 8];
+        EnPassantMove = new int[2] { -1, -1 };
+
+        //Spawn the white team
+
+        //King
+        SpawnChessman(0, 3, 0);
+
+        //Queen
+        SpawnChessman(1, 4, 0);
+
+        //Rook
+        SpawnChessman(2, 0, 0);
+        SpawnChessman(2, 7, 0);
+
+        //Bishop
+        SpawnChessman(3, 2, 0);
+        SpawnChessman(3, 5, 0);
+
+        //Horse
+        SpawnChessman(4, 1, 0);
+        SpawnChessman(4, 6, 0);
+
+        //Pawns
+        for (int i = 0; i < 8; i++)
+        {
+            SpawnChessman(5, i, 1);
+        }
+
+        //Spawn the black team
+
+        //King
+        SpawnChessman(6, 3, 7);
+
+        //Queen
+        SpawnChessman(7, 4, 7);
+
+        //Rooks
+        SpawnChessman(8, 0, 7);
+        SpawnChessman(8, 7, 7);
+
+        //Bishops
+        SpawnChessman(9, 2, 7);
+        SpawnChessman(9, 5, 7);
+
+        //Horses
+        SpawnChessman(10, 1, 7);
+        SpawnChessman(10, 6, 7);
+
+        //Pawns
+        for (int i = 0; i < 8; i++)
+        {
+            SpawnChessman(11, i, 6);
+        }
+    }
 
 
 }

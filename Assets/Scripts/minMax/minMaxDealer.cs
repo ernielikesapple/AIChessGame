@@ -1,94 +1,165 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class minMaxDealer 
 {
-    int maxDepth = 4;
+    int maxDepth = 3; // count from 0
 
     List<Chessman> _blackPieces = new List<Chessman>();   // for a certain round, current left black pieces
     List<Chessman> _whitePieces = new List<Chessman>();   // for a certain round, current left white pieces
 
     int _whiteScore = 0;
     int _blackScore = 0;
+    weightMatrix _weight = new weightMatrix();
 
+    Stack<Chessman[,]> currentBoardStateStack = new Stack<Chessman[,]>();
+    
+    public bestMoves minMaxCoreAlgorithm() {
+        bestMoves bestMove = new bestMoves();
+        bestMove = AB(0, -100000000, 1000000000, true, bestMove);
 
-    private bool[,] allowedMoves { set; get; } // check if the move on the grid is allowed
-
-    public void minMaxCoreAlgorithm() {
-        
-
-        AB(maxDepth, -100000000, 1000000000, true);
-
-        Debug.Log("black score" + _blackScore + "whit score:" + _whiteScore);
-        
+        return bestMove;
+        //Debug.Log("black score" + _blackScore + "whit score:" + _whiteScore);
     }
 
 
-    int AB(int depth, int alpha, int beta, bool max)
+    bestMoves AB(int depth, int alpha, int beta, bool max, bestMoves bestmoveInfoForEachNode)
     {
         getBoardState();
 
-        if (depth == 0)
+        if (depth == 3)
         {
-            return _Evaluate();
+            bestMoves bestMove = new bestMoves();
+            bestMove.bestScore = _Evaluate();
+            bestMove.bestSelectedPiece = bestmoveInfoForEachNode.bestSelectedPiece;
+            bestMove.bestMoveTo = bestmoveInfoForEachNode.bestMoveTo;
+            return bestMove;
+
         }
         if (max)
         {
-            int score = -10000000;
-            List<movement> allMoves = _GetMoves("BLACK");
+            //int bestScore = -10000000;
 
-            foreach (movement move in allMoves)
+            bestMoves bestMove = new bestMoves();
+            bestMove.bestScore = -10000000;
+
+            foreach (Chessman cm in _blackPieces)
             {
-                moveStack.Push(move);
+                BoardManager.Instance.allowedMoves = BoardManager.Instance.Chessmans[cm.CurrentX, cm.CurrentY].PossibleMove();
 
-                _DoFakeMove(move.firstPosition, move.secondPosition);
-
-                score = AB(depth - 1, alpha, beta, false);
-
-                _UndoFakeMove();
-
-                if (score > alpha)
+                
+                BoardManager.Instance.selectedChessman = cm;
+                if (depth == 0)
                 {
-                    move.score = score;
-                    if (move.score > bestMove.score && depth == maxDepth)
-                    {
-                        bestMove = move;
-                    }
-                    alpha = score;
+                    bestMove.bestSelectedPiece = cm;
+                    
                 }
-                if (score >= beta)
+
+                // enumerate all the moves
+                List<Vector2> possibleMovesGrids = new List<Vector2>(); //电脑黑子可走的位置
+                for (int i = 0; i < 8; i++)
                 {
-                    break;
+                    for (int j = 0; j < 8; j++)
+                    {
+                        if (BoardManager.Instance.allowedMoves[i, j])
+                        {
+                            possibleMovesGrids.Add(new Vector2(i, j)); // 查看当前棋子有没有可以走的地方
+                        }
+                    }
+                }
+                if(possibleMovesGrids.Count > 0)
+                {
+                    foreach (Vector2 move in possibleMovesGrids)
+                    {
+                        if (depth == 0)
+                        {
+                            bestMove.bestMoveTo.x = cm.CurrentX;
+                            bestMove.bestMoveTo.y = cm.CurrentY;
+                        }
+                        // do fake move
+                        currentBoardStateStack.Push(BoardManager.Instance.Chessmans);
+                        BoardManager.Instance.MoveChessEssenceLogic((int)move.x, (int)move.y);
+                        // update score
+                        bestMove = AB(depth + 1, alpha, beta, false, bestmoveInfoForEachNode);
+                        int value = bestMove.bestScore;
+                        // undo fake move
+                        BoardManager.Instance.Chessmans = currentBoardStateStack.Pop();
+                        BoardManager.Instance.ReSpawnAllChessmansAccordingToCurrentChessmans(BoardManager.Instance.Chessmans);
+
+                        bestMove.bestScore = Math.Max(bestMove.bestScore, value);
+                        alpha = Math.Max(alpha, bestMove.bestScore);
+
+                        if (beta <= alpha)
+                        {
+                            break;
+                        }
+                    }
+                }
+                else
+                {
+                    continue;
                 }
             }
-            return alpha;
+            return bestMove;
         }
         else
         {
-            int score = 10000000;
-            List<movement> allMoves = _GetMoves("WHITE");
-            foreach (movement move in allMoves)
+            bestMoves bestMove = new bestMoves();
+            bestMove.bestScore = 10000000;
+
+            foreach (Chessman cm in _whitePieces)
             {
-                moveStack.Push(move);
+                BoardManager.Instance.allowedMoves = BoardManager.Instance.Chessmans[cm.CurrentX, cm.CurrentY].PossibleMove();
+                BoardManager.Instance.selectedChessman = cm;
 
-                _DoFakeMove(move.firstPosition, move.secondPosition);
-
-                score = AB(depth - 1, alpha, beta, true);
-
-                _UndoFakeMove();
-
-                if (score < beta)
+                // enumerate all the moves
+                List<Vector2> possibleMovesGrids = new List<Vector2>(); //电脑白子可走的位置
+                for (int i = 0; i < 8; i++)
                 {
-                    move.score = score;
-                    beta = score;
+                    for (int j = 0; j < 8; j++)
+                    {
+                        if (BoardManager.Instance.allowedMoves[i, j])
+                        {
+                            possibleMovesGrids.Add(new Vector2(i, j)); // 查看当前棋子有没有可以走的地方
+                        }
+                    }
                 }
-                if (score <= alpha)
+                if (possibleMovesGrids.Count > 0)
                 {
-                    break;
+                    foreach (Vector2 move in possibleMovesGrids)
+                    {
+                        if (depth == 0)
+                        {
+                            bestMove.bestMoveTo.x = cm.CurrentX;
+                            bestMove.bestMoveTo.y = cm.CurrentY;
+                        }
+                        // do fake move
+                        currentBoardStateStack.Push(BoardManager.Instance.Chessmans);
+                        BoardManager.Instance.MoveChessEssenceLogic((int)move.x, (int)move.y);
+                        // update score
+                        bestMove = AB(depth + 1, alpha, beta, true, bestmoveInfoForEachNode);
+                        int value = bestMove.bestScore;
+                        // undo fake move
+                        BoardManager.Instance.Chessmans = currentBoardStateStack.Pop();
+                        BoardManager.Instance.ReSpawnAllChessmansAccordingToCurrentChessmans(BoardManager.Instance.Chessmans);
+
+                        bestMove.bestScore = Math.Max(bestMove.bestScore, value);
+                        beta = Math.Max(beta, bestMove.bestScore);
+
+                        if (beta <= alpha)
+                        {
+                            break;
+                        }
+                    }
+                }
+                else
+                {
+                    continue;
                 }
             }
-            return beta;
+            return bestMove;
         }
     }
 
@@ -208,33 +279,28 @@ public class minMaxDealer
     }
 
 
-    List<movement> _GetMoves(string PieceType)
+    int _Evaluate()
     {
-        List<movement> turnMove = new List<movement>();
-        List<Chessman> pieces = new List<Chessman>();
+        float pieceDifference = 0;
+        float whiteWeight = 0;
+        float blackWeight = 0;
 
-        if (PieceType == "BLACK")
-            pieces = _blackPieces;
-        else pieces = _whitePieces;
-
-        foreach (Chessman tile in pieces)
+        foreach (Chessman cm in _whitePieces)
         {
-            MoveFactory factory = new MoveFactory(_board);
-            List<Move> pieceMoves = factory.GetMoves(tile.CurrentPiece, tile.Position);
-            // found out for this pieces all the possible moves
-
-
-
-            foreach (Move move in pieceMoves)
-            {
-                Move newMove = _CreateMove(move.firstPosition, move.secondPosition);
-                turnMove.Add(newMove);
-            }
+            Vector2 position = new Vector2((int)cm.CurrentX, (int)cm.CurrentY);
+            whiteWeight += _weight.GetBoardWeight(cm.GetType().ToString(), position, "white");
         }
-        return turnMove;
+        foreach (Chessman cm in _blackPieces)
+        {
+            Vector2 position = new Vector2((int)cm.CurrentX, (int)cm.CurrentY);
+            blackWeight += _weight.GetBoardWeight(cm.GetType().ToString(), position, "black");
+        }
+        pieceDifference = (_blackScore + (blackWeight / 100)) - (_whiteScore + (whiteWeight / 100));
+        return Mathf.RoundToInt(pieceDifference * 100);
     }
 
 
 
-   
+
+
 }
