@@ -7,9 +7,13 @@ public class AlphaBeta // 输出内容： 黑方棋子x，y。。。黑方要走
     int maxDepth = 4;
 
     List<Move> _moves = new List<Move>();
+
     List<Tile> _tilesWithPieces = new List<Tile>();
     List<Tile> _blackPieces = new List<Tile>();
     List<Tile> _whitePieces = new List<Tile>();
+
+
+
     Stack<Move> moveStack = new Stack<Move>();
     Weights _weight = new Weights();
     Tile[,] _localBoard = new Tile[8, 8];
@@ -27,6 +31,7 @@ public class AlphaBeta // 输出内容： 黑方棋子x，y。。。黑方要走
 
 
         AB(maxDepth, -100000000, 1000000000, true);
+
         return bestMove;  // 整个类的输出借口， 输出核心数据， 要走的棋子坐标， 落点坐标
     }
 
@@ -163,7 +168,7 @@ public class AlphaBeta // 输出内容： 黑方棋子x，y。。。黑方要走
         return Mathf.RoundToInt(pieceDifference * 100);
     }
 
-    void _GetBoardState()  // 相当于输入参数
+    void _GetBoardState()  // 相当于输入参数     // 基本模拟完成✅
     {
         // todo： 更新棋盘状态数值
 
@@ -174,7 +179,7 @@ public class AlphaBeta // 输出内容： 黑方棋子x，y。。。黑方要走
         _whiteScore = 0;
         _tilesWithPieces.Clear();
 
-        for (int y = 0; y < 8; y++)
+        for (int y = 0; y < 8; y++)  // 查看当前棋盘上还剩下的棋子， 还剩的棋子存在 _tilesWithPieces
         {
             for (int x = 0; x < 8; x++)
             {

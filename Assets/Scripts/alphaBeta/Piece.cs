@@ -36,7 +36,7 @@ public class Piece : MonoBehaviour // chessman
     void OnMouseOver()
     {
         if (Input.GetMouseButtonDown(0) && _player == playerColor.WHITE && manager.playerTurn)
-        {
+        { 
             moves.Clear();
             GameObject[] objects = GameObject.FindGameObjectsWithTag("Highlight");
             foreach (GameObject o in objects)

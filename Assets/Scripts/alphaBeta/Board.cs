@@ -24,6 +24,7 @@ public class Board
         {
             for (int x = 0; x < 8; x++)
             {
+
                 _board[x, y] = new Tile(x, y);
             }
         }
