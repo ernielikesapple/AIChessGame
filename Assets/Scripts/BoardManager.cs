@@ -37,7 +37,7 @@ public class BoardManager : MonoBehaviour
         SpawnAllChessmans();
 
 
-        smartOpponent = false; // test purpose;
+        smartOpponent = true; // test purpose;
     }
 
     private void Update()
@@ -219,7 +219,7 @@ public class BoardManager : MonoBehaviour
         }
     }
     
-    private void SpawnChessman(int index, int x,int y)    // index represent chess piece type
+    public void SpawnChessman(int index, int x,int y)    // index represent chess piece type
     {
         GameObject go = Instantiate(chessmanPrefabs[index], GetTileCenter(x,y), Quaternion.identity) as GameObject;
         go.transform.SetParent(transform);
@@ -228,7 +228,7 @@ public class BoardManager : MonoBehaviour
         activeChessman.Add(go);
     }
 
-    private void SpawnAllChessmans()
+    public void SpawnAllChessmans()
     {
         activeChessman = new List<GameObject>();
         Chessmans = new Chessman[8, 8];
@@ -476,77 +476,77 @@ public class BoardManager : MonoBehaviour
     }
 
 
-    public void ReSpawnAllChessmansAccordingToCurrentChessmans(Chessman[,] currentChessmans)
-    {
-        activeChessman = new List<GameObject>();
-        Chessmans = new Chessman[8, 8];
-        EnPassantMove = new int[2] { -1, -1 }; // todo： check 过路兵的逻辑错误
+    //public void ReSpawnAllChessmansAccordingToCurrentChessmans(Chessman[,] currentChessmans)
+    //{
+    //    activeChessman = new List<GameObject>();
+    //    Chessmans = new Chessman[8, 8];
+    //    EnPassantMove = new int[2] { -1, -1 }; // todo： check 过路兵的逻辑错误
 
-        for (int i = 0; i < 8; i++)
-        {
-            for (int j = 0; j < 8; j++)
-            {
-                if (Chessmans[i, j] == null) // 重新respawn的棋盘上某个位置没有没有棋子
-                    continue;
-                if (Chessmans[i, j].isWhite)
-                {
-                    if (Chessmans[i, j].GetType() == typeof(King))
-                    {
-                        SpawnChessman(0, i, j);
-                    }
-                    else if (Chessmans[i, j].GetType() == typeof(Queen)) {
-                        SpawnChessman(1, i, j);
-                    }
-                    else if (Chessmans[i, j].GetType() == typeof(Rook))
-                    {
-                        SpawnChessman(2, i, j);
-                    }
-                    else if (Chessmans[i, j].GetType() == typeof(Bishop))
-                    {
-                        SpawnChessman(3, i, j);
-                    }
-                    else if (Chessmans[i, j].GetType() == typeof(Horse))
-                    {
-                        SpawnChessman(4, i, j);
-                    }
-                    else if (Chessmans[i, j].GetType() == typeof(Pawn))
-                    {
-                        SpawnChessman(5, i, j);
-                    }
-                }
-                else {
-                    // spawn black pieces
-                    if (Chessmans[i, j].GetType() == typeof(King))
-                    {
-                        SpawnChessman(6, i, j);
-                    }
-                    else if (Chessmans[i, j].GetType() == typeof(Queen))
-                    {
-                        SpawnChessman(7, i, j);
-                    }
-                    else if (Chessmans[i, j].GetType() == typeof(Rook))
-                    {
-                        SpawnChessman(8, i, j);
-                    }
-                    else if (Chessmans[i, j].GetType() == typeof(Bishop))
-                    {
-                        SpawnChessman(9, i, j);
-                    }
-                    else if (Chessmans[i, j].GetType() == typeof(Horse))
-                    {
-                        SpawnChessman(10, i, j);
-                    }
-                    else if (Chessmans[i, j].GetType() == typeof(Pawn))
-                    {
-                        SpawnChessman(11, i, j);
-                    }
-                }
+    //    for (int i = 0; i < 8; i++)
+    //    {
+    //        for (int j = 0; j < 8; j++)
+    //        {
+    //            if (Chessmans[i, j] == null) // 重新respawn的棋盘上某个位置没有没有棋子
+    //                continue;
+    //            if (Chessmans[i, j].isWhite)
+    //            {
+    //                if (Chessmans[i, j].GetType() == typeof(King))
+    //                {
+    //                    SpawnChessman(0, i, j);
+    //                }
+    //                else if (Chessmans[i, j].GetType() == typeof(Queen)) {
+    //                    SpawnChessman(1, i, j);
+    //                }
+    //                else if (Chessmans[i, j].GetType() == typeof(Rook))
+    //                {
+    //                    SpawnChessman(2, i, j);
+    //                }
+    //                else if (Chessmans[i, j].GetType() == typeof(Bishop))
+    //                {
+    //                    SpawnChessman(3, i, j);
+    //                }
+    //                else if (Chessmans[i, j].GetType() == typeof(Horse))
+    //                {
+    //                    SpawnChessman(4, i, j);
+    //                }
+    //                else if (Chessmans[i, j].GetType() == typeof(Pawn))
+    //                {
+    //                    SpawnChessman(5, i, j);
+    //                }
+    //            }
+    //            else {
+    //                // spawn black pieces
+    //                if (Chessmans[i, j].GetType() == typeof(King))
+    //                {
+    //                    SpawnChessman(6, i, j);
+    //                }
+    //                else if (Chessmans[i, j].GetType() == typeof(Queen))
+    //                {
+    //                    SpawnChessman(7, i, j);
+    //                }
+    //                else if (Chessmans[i, j].GetType() == typeof(Rook))
+    //                {
+    //                    SpawnChessman(8, i, j);
+    //                }
+    //                else if (Chessmans[i, j].GetType() == typeof(Bishop))
+    //                {
+    //                    SpawnChessman(9, i, j);
+    //                }
+    //                else if (Chessmans[i, j].GetType() == typeof(Horse))
+    //                {
+    //                    SpawnChessman(10, i, j);
+    //                }
+    //                else if (Chessmans[i, j].GetType() == typeof(Pawn))
+    //                {
+    //                    SpawnChessman(11, i, j);
+    //                }
+    //            }
 
 
-            }
-        }
+    //        }
+    //    }
          
-    }
+    //}
 
 
 }
