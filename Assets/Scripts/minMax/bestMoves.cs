@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class bestMoves 
 {
-    public int bestScore;
-    public Chessman bestSelectedPiece;
-    public Vector2 bestMoveTo;
+    public int bestScore = 0;
+    public Chessman bestSelectedPiece = null;
+    public Vector2 bestMoveTo = Vector2.zero;
 }

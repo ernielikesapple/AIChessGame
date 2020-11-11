@@ -161,7 +161,9 @@ public class BoardManager : MonoBehaviour
             {
                 selectedChessman.transform.position = GetTileCenter(x, y); //原本代码
                 selectedChessman.SetPosition(x, y);
-                Chessmans[x, y] = selectedChessman;
+                Chessmans[x, y] = selectedChessman;  // 更新当前棋子要移向点的棋子
+
+                Debug.Log("board manager 这边 棋盘上的棋子在" + "坐标x：" + x + "坐标y：" + y +  "更新了棋子名字为：" + Chessmans[x, y].GetType().ToString());
             }
             else { // 正常情况下执行的代码
                 Chessmans[selectedChessman.CurrentX, selectedChessman.CurrentY] = null;
