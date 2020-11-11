@@ -27,9 +27,9 @@ public class minMaxDealer
 
     bestMoves AB(int depth, int alpha, int beta, bool max, bestMoves bestmoveInfoForEachNode)
     {
-        getBoardState();
+        getBoardState(); // get current state of the board, pass the value into AI class
 
-        if (depth == 3)
+        if (depth == maxDepth)
         {
             bestMoves bestMove = new bestMoves();
             bestMove.bestScore = _Evaluate();
@@ -166,7 +166,7 @@ public class minMaxDealer
 
     public void getBoardState()
     {
-        _blackPieces.Clear();
+        _blackPieces.Clear();  // declared variables to store active white black info on the current board
         _whitePieces.Clear();
         _blackScore = 0;
         _whiteScore = 0;

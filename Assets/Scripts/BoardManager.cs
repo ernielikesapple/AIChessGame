@@ -26,7 +26,6 @@ public class BoardManager : MonoBehaviour
 
     public bool smartOpponent = false;
     public bool smartOpponentDoingTrials = false;
-    AlphaBeta ab = new AlphaBeta();
 
     /*private Quaternion orientation = Quaternion.Euler(0, 0, 0);*/
 
@@ -157,23 +156,30 @@ public class BoardManager : MonoBehaviour
                 }
             }
 
-            Chessmans[selectedChessman.CurrentX, selectedChessman.CurrentY] = null;
-            //selectedChessman.transform.position = GetTileCenter(x, y);原本代码
 
-            selectedChessman.SetPosition(x, y); // todo: nav mesh agent 逻辑 change current logic to nav mesh agent mode
-            // todo: add nav mesh agent to selectedChessman
+            if (smartOpponentDoingTrials)   // 当ai 对手 进入算法做尝试和实验时候需要执行的代码
+            {
+                selectedChessman.transform.position = GetTileCenter(x, y); //原本代码
+                selectedChessman.SetPosition(x, y);
+                Chessmans[x, y] = selectedChessman;
+            }
+            else { // 正常情况下执行的代码
+                Chessmans[selectedChessman.CurrentX, selectedChessman.CurrentY] = null;
+                //selectedChessman.transform.position = GetTileCenter(x, y);原本代码
 
-            NavMeshAgent agent = selectedChessman.GetComponent<NavMeshAgent>();
-            agent.destination = new Vector3(x + 0.5f, 0, y + 0.5f);
-            
-            Animator animator = selectedChessman.GetComponent<Animator>();
-            animator.SetBool("walking", true);
-          
+                selectedChessman.SetPosition(x, y); // todo: nav mesh agent 逻辑 change current logic to nav mesh agent mode
+                                                    // todo: add nav mesh agent to selectedChessman
+
+                NavMeshAgent agent = selectedChessman.GetComponent<NavMeshAgent>();
+                agent.destination = new Vector3(x + 0.5f, 0, y + 0.5f);
+
+                Animator animator = selectedChessman.GetComponent<Animator>();
+                animator.SetBool("walking", true);
 
 
 
-            Chessmans[x, y] = selectedChessman;
-           
+                Chessmans[x, y] = selectedChessman;
+            }
 
             isWhiteTurn = !isWhiteTurn;
           
@@ -455,96 +461,89 @@ public class BoardManager : MonoBehaviour
         }
         return possibleMovesGrids;
     }
-
-
     private void doAIMove() {
-        // todo: get current state of the board, pass the value into AI class
 
-        // declare 3d variables to store active white black info on the current board
-
-        //Debug.Log("going to move + x" + blackPieceInfoDic[Random.Range(0, 5)].x + "==y==" + blackPieceInfoDic[Random.Range(0, 5)].y);
-
-        //   allowedMoves = Chessmans[x, y].PossibleMove();
-
-
-        // todo: get the return value for the from the class
-
-        // Move move = ab.GetMove();  // 核心当前ai玩家要走的棋子坐标， 主角棋子被ai玩家吃掉的棋子的坐标
-
-        // todo: add logic to move the piece , similiar to the logic in MoveChessman method
-        //_DoAIMove(move);
-
+        smartOpponentDoingTrials = true;
 
         minMaxDealer minMaxDealerForBlackPiece = new minMaxDealer();
+        bestMoves bM = minMaxDealerForBlackPiece.minMaxCoreAlgorithm();
+        selectedChessman = bM.bestSelectedPiece; // 核心当前ai玩家要走的棋子坐标，
+        MoveChessEssenceLogic((int)bM.bestMoveTo.x, (int)bM.bestMoveTo.y); //  主角棋子被ai玩家吃掉的棋子的坐标
 
-        minMaxDealerForBlackPiece.minMaxCoreAlgorithm();
-
-        // todo: get the return value from minMaxDealerForBlackPiece let it pass to MoveChessEssenceLogic
-        //MoveChessEssenceLogic((int)possibleMovesGrids[randomMove].x, (int)possibleMovesGrids[randomMove].y);
-
+        smartOpponentDoingTrials = false;
     }
-
 
 
     public void ReSpawnAllChessmansAccordingToCurrentChessmans(Chessman[,] currentChessmans)
     {
-
-
-        activeChessman = 
+        activeChessman = new List<GameObject>();
         Chessmans = new Chessman[8, 8];
-        EnPassantMove = new int[2] { -1, -1 };
+        EnPassantMove = new int[2] { -1, -1 }; // todo： check 过路兵的逻辑错误
 
-        //Spawn the white team
-
-        //King
-        SpawnChessman(0, 3, 0);
-
-        //Queen
-        SpawnChessman(1, 4, 0);
-
-        //Rook
-        SpawnChessman(2, 0, 0);
-        SpawnChessman(2, 7, 0);
-
-        //Bishop
-        SpawnChessman(3, 2, 0);
-        SpawnChessman(3, 5, 0);
-
-        //Horse
-        SpawnChessman(4, 1, 0);
-        SpawnChessman(4, 6, 0);
-
-        //Pawns
         for (int i = 0; i < 8; i++)
         {
-            SpawnChessman(5, i, 1);
+            for (int j = 0; j < 8; j++)
+            {
+                if (Chessmans[i, j] == null) // 重新respawn的棋盘上某个位置没有没有棋子
+                    continue;
+                if (Chessmans[i, j].isWhite)
+                {
+                    if (Chessmans[i, j].GetType() == typeof(King))
+                    {
+                        SpawnChessman(0, i, j);
+                    }
+                    else if (Chessmans[i, j].GetType() == typeof(Queen)) {
+                        SpawnChessman(1, i, j);
+                    }
+                    else if (Chessmans[i, j].GetType() == typeof(Rook))
+                    {
+                        SpawnChessman(2, i, j);
+                    }
+                    else if (Chessmans[i, j].GetType() == typeof(Bishop))
+                    {
+                        SpawnChessman(3, i, j);
+                    }
+                    else if (Chessmans[i, j].GetType() == typeof(Horse))
+                    {
+                        SpawnChessman(4, i, j);
+                    }
+                    else if (Chessmans[i, j].GetType() == typeof(Pawn))
+                    {
+                        SpawnChessman(5, i, j);
+                    }
+                }
+                else {
+                    // spawn black pieces
+                    if (Chessmans[i, j].GetType() == typeof(King))
+                    {
+                        SpawnChessman(6, i, j);
+                    }
+                    else if (Chessmans[i, j].GetType() == typeof(Queen))
+                    {
+                        SpawnChessman(7, i, j);
+                    }
+                    else if (Chessmans[i, j].GetType() == typeof(Rook))
+                    {
+                        SpawnChessman(8, i, j);
+                    }
+                    else if (Chessmans[i, j].GetType() == typeof(Bishop))
+                    {
+                        SpawnChessman(9, i, j);
+                    }
+                    else if (Chessmans[i, j].GetType() == typeof(Horse))
+                    {
+                        SpawnChessman(10, i, j);
+                    }
+                    else if (Chessmans[i, j].GetType() == typeof(Pawn))
+                    {
+                        SpawnChessman(11, i, j);
+                    }
+                }
+
+
+            }
         }
-
-        //Spawn the black team
-
-        //King
-        SpawnChessman(6, 3, 7);
-
-        //Queen
-        SpawnChessman(7, 4, 7);
-
-        //Rooks
-        SpawnChessman(8, 0, 7);
-        SpawnChessman(8, 7, 7);
-
-        //Bishops
-        SpawnChessman(9, 2, 7);
-        SpawnChessman(9, 5, 7);
-
-        //Horses
-        SpawnChessman(10, 1, 7);
-        SpawnChessman(10, 6, 7);
-
-        //Pawns
-        for (int i = 0; i < 8; i++)
-        {
-            SpawnChessman(11, i, 6);
-        }
+         
     }
 
 
