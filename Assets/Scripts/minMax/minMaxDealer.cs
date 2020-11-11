@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class minMaxDealer
 {
-    int maxDepth = 3; // count from 0
+    int maxDepth = 2; // count from 0
 
     List<Chessman> _blackPieces = new List<Chessman>();   // for a certain round, current left black pieces
     List<Chessman> _whitePieces = new List<Chessman>();   // for a certain round, current left white pieces
@@ -26,20 +26,18 @@ public class minMaxDealer
 
     }
 
-
+    string format = " ";
+    string formatq = "====================||";
     bestMoves AB(int depth, int alpha, int beta, bool max, bestMoves bestmoveInfoForEachNode)
     {
-        Debug.Log("ab1");
+        format += formatq;
         getBoardState(); // get current state of the board, pass the value into AI class
-
-        Debug.Log("ab2");
-
         if (depth == maxDepth)
         {
-            Debug.Log("ab3");
+            Debug.Log(format+"ab3");
             bestMoves bestMove = new bestMoves();
             bestMove.bestScore = _Evaluate();
-            Debug.Log("ab3==最后叶节点层分数=="+ bestMove.bestScore);
+            Debug.Log(format+"ab3==最后叶节点层分数=="+ bestMove.bestScore);
             bestMove.bestSelectedPiece = bestmoveInfoForEachNode.bestSelectedPiece;
             bestMove.bestMoveTo = bestmoveInfoForEachNode.bestMoveTo;
             return bestMove;
@@ -47,7 +45,7 @@ public class minMaxDealer
         }
         if (max)
         {
-            Debug.Log("黑棋轮次");
+            Debug.Log(format+"黑棋轮次");
             //int bestScore = -10000000;
 
             bestMoves bestMove = new bestMoves();
@@ -56,12 +54,11 @@ public class minMaxDealer
             for(int zz = 0 ; zz < _blackPieces.Count; zz++)
             {
                 Chessman cm = _blackPieces[zz];
-
-                Debug.Log("黑棋规格1===:"+ _blackPieces.Count);
+                Debug.Log(format+"黑棋规格1===:"+ _blackPieces.Count);
                 BoardManager.Instance.allowedMoves = BoardManager.Instance.Chessmans[cm.CurrentX, cm.CurrentY].PossibleMove();
 
                 BoardManager.Instance.selectedChessman = cm;
-                Debug.Log("递归层数" + depth + "ab当前黑棋外层 选中棋子" + cm.GetType().ToString() + "坐标x：" + cm.CurrentX + "坐标y：" + cm.CurrentY);
+                Debug.Log(format+"递归层数" + depth + "ab当前黑棋外层 选中棋子" + cm.GetType().ToString() + "坐标x：" + cm.CurrentX + "坐标y：" + cm.CurrentY);
                 if (depth == 0)
                 {
                     bestMove.bestSelectedPiece = cm;  // 记录第0层选中的黑棋
@@ -97,7 +94,7 @@ public class minMaxDealer
                             bestMove.bestMoveTo.x = bestmoveInfoForEachNode.bestMoveTo.x; // 记录黑棋第零层时，选中黑棋要走向的点的坐标
                             bestMove.bestMoveTo.y = bestmoveInfoForEachNode.bestMoveTo.y;
                         }
-                        Debug.Log("当前选中棋子有可走地方 当前递归层数" + depth + "black score" + _blackScore + "whit score:" + _whiteScore  + "全体返回出去后选中的黑棋名字是：" + bestMove.bestSelectedPiece.GetType().ToString() + " x===" + bestMove.bestMoveTo.x + " Y===" + bestMove.bestMoveTo.y);
+                        Debug.Log(format+"当前选中棋子有可走地方 当前递归层数" + depth + "black score" + _blackScore + "whit score:" + _whiteScore  + "全体返回出去后选中的黑棋名字是：" + bestMove.bestSelectedPiece.GetType().ToString() + " x===" + bestMove.bestMoveTo.x + " Y===" + bestMove.bestMoveTo.y);
                         // do fake move
 
                         // 用stack 保存当前走的那一步的坐标， 棋子，cm， move，   吃子信息， 被吃子名 
@@ -111,11 +108,14 @@ public class minMaxDealer
 
                         currentBoardStateStack.Push(currentTempMovesInfo);
                         
-                        Debug.Log("黑0000黑子名" + cm.GetType().ToString() + "从坐标x， y  (" + cm.CurrentX +"," + cm.CurrentY +  ")" + "要移向点的x信息：" + move.x + "要移向点的y信息：" + move.y);
+                        Debug.Log(format+"黑0000黑子名" + cm.GetType().ToString() + "从坐标x， y  (" + cm.CurrentX +"," + cm.CurrentY +  ")" + "要移向点的x信息：" + move.x + "要移向点的y信息：" + move.y);
                         BoardManager.Instance.MoveChessEssenceLogic((int)move.x, (int)move.y);
                         // update score
-                        Debug.Log("黑11111棋盘当前在x， y是：" + cm.CurrentX + "," + cm.CurrentY);
+                        Debug.Log(format+"黑11111棋盘当前在x， y是：" + cm.CurrentX + "," + cm.CurrentY);
                         bestMove = AB(depth + 1, alpha, beta, false, bestMove);
+
+                        format = format.Substring(0, format.Length - formatq.Length);
+
                         int value = bestMove.bestScore;
                         // undo fake move
                         // todo write function to move one piece back， and check if there is another piece then put it back
@@ -151,7 +151,7 @@ public class minMaxDealer
                             }
                         }
 
-                        Debug.Log("黑333 棋盘当前在x， y  (" + cm.CurrentX +"," + cm.CurrentY +") 上的棋子名字是" + BoardManager.Instance.Chessmans[cm.CurrentX, cm.CurrentY].GetType().ToString());
+                        Debug.Log(format+"黑333 棋盘当前在x， y  (" + cm.CurrentX +"," + cm.CurrentY +") 上的棋子名字是" + BoardManager.Instance.Chessmans[cm.CurrentX, cm.CurrentY].GetType().ToString());
                       
                         bestMove.bestScore = Math.Max(bestMove.bestScore, value);
                         alpha = Math.Max(alpha, bestMove.bestScore);
@@ -160,7 +160,7 @@ public class minMaxDealer
                         {
                             break;
                         }
-                        Debug.Log("黑棋规格2===:" + _blackPieces.Count);
+                        Debug.Log(format+"黑棋规格2===:" + _blackPieces.Count);
                     }
                 }
                 else
@@ -172,19 +172,19 @@ public class minMaxDealer
         }
         else
         {
-            Debug.Log("白棋轮次");
+            Debug.Log(format+"白棋轮次");
             bestMoves bestMove = new bestMoves();
             bestMove.bestScore = 10000000;
 
             for (int zzw = 0; zzw < _whitePieces.Count; zzw++)
             {
                 Chessman cm = _whitePieces[zzw];
-                Debug.Log("递归层数" + depth+ "ab当前白棋外层 选中棋子" + cm.GetType().ToString());
+                Debug.Log(format+"递归层数" + depth+ "ab当前白棋外层 选中棋子" + cm.GetType().ToString());
                 BoardManager.Instance.allowedMoves = BoardManager.Instance.Chessmans[cm.CurrentX, cm.CurrentY].PossibleMove();
                 BoardManager.Instance.selectedChessman = cm;
 
                 bestMove.bestSelectedPiece = bestmoveInfoForEachNode.bestSelectedPiece;// 记录第0层选中的黑棋
-                Debug.Log("当前选中 白 棋子有可走地方 当前递归层数" + depth + "black score" + _blackScore + "whit score:" + _whiteScore + "全体返回出去后选中的黑棋名字是：" + bestMove.bestSelectedPiece.GetType().ToString() + " x===" + bestMove.bestMoveTo.x + " Y===" + bestMove.bestMoveTo.y);
+               
                 // enumerate all the moves
                 List<Vector2> possibleMovesGrids = new List<Vector2>(); //电脑白子可走的位置
                 for (int i = 0; i < 8; i++)
@@ -199,6 +199,7 @@ public class minMaxDealer
                 }
                 if (possibleMovesGrids.Count > 0)
                 {
+                    Debug.Log(format + "当前选中 白 棋子有可走地方 当前递归层数" + depth + "black score" + _blackScore + "whit score:" + _whiteScore + "全体返回出去后选中的黑棋名字是：" + bestMove.bestSelectedPiece.GetType().ToString() + " x===" + bestMove.bestMoveTo.x + " Y===" + bestMove.bestMoveTo.y);
                     foreach (Vector2 move in possibleMovesGrids)
                     {
                         bestMove.bestMoveTo.x = bestmoveInfoForEachNode.bestMoveTo.x; // 记录黑棋第零层时，选中黑棋要走向的点的坐标
@@ -217,9 +218,13 @@ public class minMaxDealer
 
                         BoardManager.Instance.MoveChessEssenceLogic((int)move.x, (int)move.y);
                         // update score
-                        Debug.Log("白11111");
+                        Debug.Log(format+"白11111");
                         bestMove = AB(depth + 1, alpha, beta, true, bestMove);
-                        Debug.Log("白2222");
+
+                        
+                        format = format.Substring(0, format.Length - formatq.Length);
+
+                        Debug.Log(format+"白2222");
                         int value = bestMove.bestScore;
                         // undo fake move
 
