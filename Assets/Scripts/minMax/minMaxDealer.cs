@@ -53,8 +53,11 @@ public class minMaxDealer
             bestMoves bestMove = new bestMoves();
             bestMove.bestScore = -10000000;
 
-            foreach (Chessman cm in _blackPieces)
+            for(int zz = 0 ; zz < _blackPieces.Count; zz++)
             {
+                Chessman cm = _blackPieces[zz];
+
+                Debug.Log("黑棋规格1===:"+ _blackPieces.Count);
                 BoardManager.Instance.allowedMoves = BoardManager.Instance.Chessmans[cm.CurrentX, cm.CurrentY].PossibleMove();
 
                 BoardManager.Instance.selectedChessman = cm;
@@ -119,6 +122,7 @@ public class minMaxDealer
                         tempMovesInfo formerTempMovesInfo = currentBoardStateStack.Pop();
                         cm.SetPosition((int)formerTempMovesInfo.currentTrialPieceCoord.x, (int)formerTempMovesInfo.currentTrialPieceCoord.y);
                         BoardManager.Instance.selectedChessman = cm;
+                        //BoardManager.Instance.MoveChessEssenceLogic((int)formerTempMovesInfo.currentTrialPieceCoord.x, (int)formerTempMovesInfo.currentTrialPieceCoord.y);
                         BoardManager.Instance.Chessmans[(int)formerTempMovesInfo.currentTrialPieceCoord.x, (int)formerTempMovesInfo.currentTrialPieceCoord.y] = cm;
                         if (formerTempMovesInfo.pieceGotEaten != null) { // regenerate the eaten piece
                             if (cm.GetType().ToString() == "King")
@@ -156,6 +160,7 @@ public class minMaxDealer
                         {
                             break;
                         }
+                        Debug.Log("黑棋规格2===:" + _blackPieces.Count);
                     }
                 }
                 else
@@ -171,8 +176,9 @@ public class minMaxDealer
             bestMoves bestMove = new bestMoves();
             bestMove.bestScore = 10000000;
 
-            foreach (Chessman cm in _whitePieces)
+            for (int zzw = 0; zzw < _whitePieces.Count; zzw++)
             {
+                Chessman cm = _whitePieces[zzw];
                 Debug.Log("递归层数" + depth+ "ab当前白棋外层 选中棋子" + cm.GetType().ToString());
                 BoardManager.Instance.allowedMoves = BoardManager.Instance.Chessmans[cm.CurrentX, cm.CurrentY].PossibleMove();
                 BoardManager.Instance.selectedChessman = cm;
@@ -218,8 +224,10 @@ public class minMaxDealer
                         // undo fake move
 
                         tempMovesInfo formerTempMovesInfo = currentBoardStateStack.Pop();
+
                         cm.SetPosition((int)formerTempMovesInfo.currentTrialPieceCoord.x, (int)formerTempMovesInfo.currentTrialPieceCoord.y);
                         BoardManager.Instance.selectedChessman = cm;
+                        //BoardManager.Instance.MoveChessEssenceLogic((int)formerTempMovesInfo.currentTrialPieceCoord.x, (int)formerTempMovesInfo.currentTrialPieceCoord.y);
                         BoardManager.Instance.Chessmans[(int)formerTempMovesInfo.currentTrialPieceCoord.x, (int)formerTempMovesInfo.currentTrialPieceCoord.y] = cm;
                         if (formerTempMovesInfo.pieceGotEaten != null)
                         { // regenerate the eaten piece
