@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class minMaxDealer
 {
-    int maxDepth = 2; // count from 0
+    int maxDepth = 2; // todo : originally 3, for testing purpose just set 2 temporarily // count from 0
 
     List<Chessman> _blackPieces = new List<Chessman>();   // for a certain round, current left black pieces
     List<Chessman> _whitePieces = new List<Chessman>();   // for a certain round, current left white pieces
@@ -51,7 +51,7 @@ public class minMaxDealer
             bestMoves bestMove = new bestMoves();
             bestMove.bestScore = -10000000;
 
-            for(int zz = 0 ; zz < _blackPieces.Count; zz++)
+            for(int zz = 0 ; zz < _blackPieces.Count; zz++) // don't use foreach, since for each does not allow you to modifiy the content of each chessman
             {
                 Chessman cm = _blackPieces[zz];
                 Debug.Log(format+"黑棋规格1===:"+ _blackPieces.Count);
@@ -111,13 +111,15 @@ public class minMaxDealer
                         Debug.Log(format+"黑0000黑子名" + cm.GetType().ToString() + "从坐标x， y  (" + cm.CurrentX +"," + cm.CurrentY +  ")" + "要移向点的x信息：" + move.x + "要移向点的y信息：" + move.y);
 
 
-                        Debug.Log("移动前棋盘样子\n");
+                        Debug.Log("黑棋 移动前棋盘样子" + " 黑棋现存个数： " + _blackPieces.Count + "\n");
                         printCurrentBoardToConsole();
+
+
                         BoardManager.Instance.MoveChessEssenceLogic((int)move.x, (int)move.y);
                         // update score
                         Debug.Log(format+"黑11111棋盘当前在x， y是：" + cm.CurrentX + "," + cm.CurrentY);
 
-                        Debug.Log("移动后棋盘样子\n");
+                        Debug.Log("黑棋 移动后棋盘样子" + " 黑棋现存个数： " + _blackPieces.Count + "\n");
                         printCurrentBoardToConsole();
 
                         bestMove = AB(depth + 1, alpha, beta, false, bestMove);
@@ -125,15 +127,20 @@ public class minMaxDealer
                         format = format.Substring(0, format.Length - formatq.Length);
 
                         int value = bestMove.bestScore;
+                        Debug.Log(format + "黑2222---value" + value + "alpha" + alpha + "beta" + alpha);
                         // undo fake move
-                        // todo write function to move one piece back， and check if there is another piece then put it back
+
                         tempMovesInfo formerTempMovesInfo = currentBoardStateStack.Pop();
+                        BoardManager.Instance.Chessmans[(int)cm.CurrentX, (int)cm.CurrentY] = null; // 把原来位置置空
+                        Debug.Log("黑棋前一步移动过的棋子的位置坐标x:" + (int)cm.CurrentX + "Y:" + (int)cm.CurrentY);
                         cm.SetPosition((int)formerTempMovesInfo.currentTrialPieceCoord.x, (int)formerTempMovesInfo.currentTrialPieceCoord.y);
                         BoardManager.Instance.selectedChessman = cm;
                         //BoardManager.Instance.MoveChessEssenceLogic((int)formerTempMovesInfo.currentTrialPieceCoord.x, (int)formerTempMovesInfo.currentTrialPieceCoord.y);
+                        
                         BoardManager.Instance.Chessmans[(int)formerTempMovesInfo.currentTrialPieceCoord.x, (int)formerTempMovesInfo.currentTrialPieceCoord.y] = cm;
-                        if (formerTempMovesInfo.pieceGotEaten != null) { // regenerate the eaten piece
-                            if (cm.GetType().ToString() == "King")
+                        if (formerTempMovesInfo.pieceGotEaten != null)  // regenerate the eaten piece //   after undo fake move， and check if there is another piece then put it back
+                        {
+                            if (cm.GetType().ToString() == "King") 
                             {
                                 BoardManager.Instance.SpawnChessman(0, (int)formerTempMovesInfo.movementInfo.x, (int)formerTempMovesInfo.movementInfo.y);
                             }
@@ -160,7 +167,10 @@ public class minMaxDealer
                         }
 
                         Debug.Log(format+"黑333 棋盘当前在x， y  (" + cm.CurrentX +"," + cm.CurrentY +") 上的棋子名字是" + BoardManager.Instance.Chessmans[cm.CurrentX, cm.CurrentY].GetType().ToString());
-                      
+
+                        Debug.Log("黑棋 复盘后 棋盘样子" + " 黑棋现存个数： " + _blackPieces.Count + "\n");
+                        printCurrentBoardToConsole();
+
                         bestMove.bestScore = Math.Max(bestMove.bestScore, value);
                         alpha = Math.Max(alpha, bestMove.bestScore);
 
@@ -187,7 +197,8 @@ public class minMaxDealer
             for (int zzw = 0; zzw < _whitePieces.Count; zzw++)
             {
                 Chessman cm = _whitePieces[zzw];
-                Debug.Log(format+"递归层数" + depth+ "ab当前白棋外层 选中棋子" + cm.GetType().ToString());
+                Debug.Log(format+"递归层数" + depth+ "ab当前白棋外层 选中棋子" + cm.GetType().ToString() + "坐标x：" + cm.CurrentX + "坐标y：" + cm.CurrentY);
+
                 BoardManager.Instance.allowedMoves = BoardManager.Instance.Chessmans[cm.CurrentX, cm.CurrentY].PossibleMove();
                 BoardManager.Instance.selectedChessman = cm;
 
@@ -208,6 +219,7 @@ public class minMaxDealer
 
                 if (possibleMovesGrids.Count > 0)
                 {
+                    Debug.Log("出错点0 possible moves count:" + possibleMovesGrids.Count);
                     Debug.Log(format + "当前选中 白 棋子有可走地方 当前递归层数" + depth + "black score" + _blackScore + "whit score:" + _whiteScore + "全体返回出去后选中的黑棋名字是：" + bestMove.bestSelectedPiece.GetType().ToString() + " x===" + bestMove.bestMoveTo.x + " Y===" + bestMove.bestMoveTo.y);
                     foreach (Vector2 move in possibleMovesGrids)
                     {
@@ -216,7 +228,9 @@ public class minMaxDealer
 
                         // do fake move
                         tempMovesInfo currentTempMovesInfo = new tempMovesInfo();
+
                         currentTempMovesInfo.currentTrialPiece = cm;
+                        Debug.Log("出错点白3！！！" + "cm.current x:" + cm.CurrentX + "cm.current Y:" + cm.CurrentY);
                         currentTempMovesInfo.currentTrialPieceCoord = new Vector2(cm.CurrentX, cm.CurrentY);
                         currentTempMovesInfo.movementInfo = move;
                         if (BoardManager.Instance.Chessmans[(int)move.x, (int)move.y] != null)
@@ -225,9 +239,16 @@ public class minMaxDealer
                         }
                         currentBoardStateStack.Push(currentTempMovesInfo);
 
+                        Debug.Log("白棋 移动前棋盘样子" + " 白棋现存个数： " + _blackPieces.Count + "\n");
+                        printCurrentBoardToConsole();
+
                         BoardManager.Instance.MoveChessEssenceLogic((int)move.x, (int)move.y);
                         // update score
                         Debug.Log(format+"白11111");
+
+                        Debug.Log("白棋 移动后棋盘样子" + " 白棋现存个数： " + _blackPieces.Count + "\n");
+                        printCurrentBoardToConsole();
+
                         bestMove = AB(depth + 1, alpha, beta, true, bestMove);
 
 
@@ -237,12 +258,16 @@ public class minMaxDealer
                         Debug.Log(format+"白2222");
                         int value = bestMove.bestScore;
                         // undo fake move
-
+                        Debug.Log(format + "白2222---value" + value + "alpha" + alpha + "beta" + alpha);
                         tempMovesInfo formerTempMovesInfo = currentBoardStateStack.Pop();
 
+                        BoardManager.Instance.Chessmans[(int)cm.CurrentX, (int)cm.CurrentY] = null; // 把原来位置置空
+                        Debug.Log("出错点白1！！！" + "cm.current x:" + cm.CurrentX + "cm.current Y:" + cm.CurrentY);
                         cm.SetPosition((int)formerTempMovesInfo.currentTrialPieceCoord.x, (int)formerTempMovesInfo.currentTrialPieceCoord.y);
+                        Debug.Log("出错点白2！！！" + "cm.current x:" + cm.CurrentX + "cm.current Y:" + cm.CurrentY);
                         BoardManager.Instance.selectedChessman = cm;
                         //BoardManager.Instance.MoveChessEssenceLogic((int)formerTempMovesInfo.currentTrialPieceCoord.x, (int)formerTempMovesInfo.currentTrialPieceCoord.y);
+                        
                         BoardManager.Instance.Chessmans[(int)formerTempMovesInfo.currentTrialPieceCoord.x, (int)formerTempMovesInfo.currentTrialPieceCoord.y] = cm;
                         if (formerTempMovesInfo.pieceGotEaten != null)
                         { // regenerate the eaten piece
@@ -272,6 +297,8 @@ public class minMaxDealer
                             }
                         }
 
+                        Debug.Log("白棋 复盘后 棋盘样子" + " 黑棋现存个数： " + _blackPieces.Count + "\n");
+                        printCurrentBoardToConsole();
 
                         bestMove.bestScore = Math.Max(bestMove.bestScore, value);
                         beta = Math.Max(beta, bestMove.bestScore);
@@ -442,13 +469,13 @@ public class minMaxDealer
                 if (BoardManager.Instance.Chessmans[yy, uu] != null)
                 {
 
-                    stringVersion += uu.ToString() + " " + yy.ToString() + " " + BoardManager.Instance.Chessmans[yy, uu].GetType().ToString() + "       ";
+                    stringVersion += yy.ToString() + " " + uu.ToString() + " " + BoardManager.Instance.Chessmans[yy, uu].GetType().ToString() + "       ";
 
                 }
                 else
                 {
 
-                    stringVersion += uu.ToString() + " " + yy.ToString() + " " + "空子   " + "       ";
+                    stringVersion += yy.ToString() + " " + uu.ToString() + " " + "空子   " + "       ";
                 }
 
             }
