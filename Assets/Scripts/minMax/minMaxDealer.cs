@@ -109,9 +109,17 @@ public class minMaxDealer
                         currentBoardStateStack.Push(currentTempMovesInfo);
                         
                         Debug.Log(format+"黑0000黑子名" + cm.GetType().ToString() + "从坐标x， y  (" + cm.CurrentX +"," + cm.CurrentY +  ")" + "要移向点的x信息：" + move.x + "要移向点的y信息：" + move.y);
+
+
+                        Debug.Log("移动前棋盘样子\n");
+                        printCurrentBoardToConsole();
                         BoardManager.Instance.MoveChessEssenceLogic((int)move.x, (int)move.y);
                         // update score
                         Debug.Log(format+"黑11111棋盘当前在x， y是：" + cm.CurrentX + "," + cm.CurrentY);
+
+                        Debug.Log("移动后棋盘样子\n");
+                        printCurrentBoardToConsole();
+
                         bestMove = AB(depth + 1, alpha, beta, false, bestMove);
 
                         format = format.Substring(0, format.Length - formatq.Length);
@@ -197,6 +205,7 @@ public class minMaxDealer
                         }
                     }
                 }
+
                 if (possibleMovesGrids.Count > 0)
                 {
                     Debug.Log(format + "当前选中 白 棋子有可走地方 当前递归层数" + depth + "black score" + _blackScore + "whit score:" + _whiteScore + "全体返回出去后选中的黑棋名字是：" + bestMove.bestSelectedPiece.GetType().ToString() + " x===" + bestMove.bestMoveTo.x + " Y===" + bestMove.bestMoveTo.y);
@@ -220,6 +229,7 @@ public class minMaxDealer
                         // update score
                         Debug.Log(format+"白11111");
                         bestMove = AB(depth + 1, alpha, beta, true, bestMove);
+
 
                         
                         format = format.Substring(0, format.Length - formatq.Length);
@@ -419,6 +429,35 @@ public class minMaxDealer
     }
 
 
+
+
+    public void printCurrentBoardToConsole() {
+
+        Debug.Log("-----棋盘样子---\n");
+        string stringVersion = "";
+        for (int uu = 7; uu >= 0; uu--)
+        {
+            for (int yy = 0; yy < 8; yy++)
+            {
+                if (BoardManager.Instance.Chessmans[yy, uu] != null)
+                {
+
+                    stringVersion += uu.ToString() + " " + yy.ToString() + " " + BoardManager.Instance.Chessmans[yy, uu].GetType().ToString() + "       ";
+
+                }
+                else
+                {
+
+                    stringVersion += uu.ToString() + " " + yy.ToString() + " " + "空子   " + "       ";
+                }
+
+            }
+            stringVersion += "\n";
+        }
+        Debug.Log(stringVersion);
+        Debug.Log("-----棋盘样子---\n");
+
+    }
 
 
 

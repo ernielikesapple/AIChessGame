@@ -159,6 +159,7 @@ public class BoardManager : MonoBehaviour
 
             if (smartOpponentDoingTrials)   // 当ai 对手 进入算法做尝试和实验时候需要执行的代码
             {
+                Chessmans[selectedChessman.CurrentX, selectedChessman.CurrentY] = null;
                 selectedChessman.transform.position = GetTileCenter(x, y); //原本代码
                 selectedChessman.SetPosition(x, y);
                 Chessmans[x, y] = selectedChessman;  // 更新当前棋子要移向点的棋子
