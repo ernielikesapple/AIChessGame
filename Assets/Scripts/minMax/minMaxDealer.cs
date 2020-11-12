@@ -114,7 +114,7 @@ public class minMaxDealer
                         Debug.Log("黑棋 移动前棋盘样子" + " 黑棋现存个数： " + _blackPieces.Count + "\n");
                         printCurrentBoardToConsole();
 
-
+                        BoardManager.Instance.selectedChessman = cm;
                         BoardManager.Instance.MoveChessEssenceLogic((int)move.x, (int)move.y);
                         // update score
                         Debug.Log(format+"黑11111棋盘当前在x， y是：" + cm.CurrentX + "," + cm.CurrentY);
@@ -131,12 +131,15 @@ public class minMaxDealer
                         // undo fake move
 
                         tempMovesInfo formerTempMovesInfo = currentBoardStateStack.Pop();
-                        BoardManager.Instance.Chessmans[(int)cm.CurrentX, (int)cm.CurrentY] = null; // 把原来位置置空
-                        Debug.Log("黑棋前一步移动过的棋子的位置坐标x:" + (int)cm.CurrentX + "Y:" + (int)cm.CurrentY);
-                        cm.SetPosition((int)formerTempMovesInfo.currentTrialPieceCoord.x, (int)formerTempMovesInfo.currentTrialPieceCoord.y);
-                        BoardManager.Instance.selectedChessman = cm;
-                        //BoardManager.Instance.MoveChessEssenceLogic((int)formerTempMovesInfo.currentTrialPieceCoord.x, (int)formerTempMovesInfo.currentTrialPieceCoord.y);
-                        
+
+                        //BoardManager.Instance.Chessmans[(int)cm.CurrentX, (int)cm.CurrentY] = null; // 把原来位置置空
+                        //Debug.Log("黑棋前一步移动过的棋子的位置坐标x:" + (int)cm.CurrentX + "Y:" + (int)cm.CurrentY);
+                        //cm.SetPosition((int)formerTempMovesInfo.currentTrialPieceCoord.x, (int)formerTempMovesInfo.currentTrialPieceCoord.y);
+
+                        BoardManager.Instance.selectedChessman = formerTempMovesInfo.currentTrialPiece;
+                        BoardManager.Instance.MoveChessBackEssenceLogic((int)formerTempMovesInfo.currentTrialPieceCoord.x, (int)formerTempMovesInfo.currentTrialPieceCoord.y);
+                        //BoardManager.Instance.selectedChessman = cm;
+
                         BoardManager.Instance.Chessmans[(int)formerTempMovesInfo.currentTrialPieceCoord.x, (int)formerTempMovesInfo.currentTrialPieceCoord.y] = cm;
                         if (formerTempMovesInfo.pieceGotEaten != null)  // regenerate the eaten piece //   after undo fake move， and check if there is another piece then put it back
                         {
@@ -162,6 +165,8 @@ public class minMaxDealer
                             }
                             else if (cm.GetType().ToString() == "Pawn")
                             {
+                                Debug.Log("哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈2");
+
                                 BoardManager.Instance.SpawnChessman(5, (int)formerTempMovesInfo.movementInfo.x, (int)formerTempMovesInfo.movementInfo.y);
                             }
                         }
@@ -242,6 +247,7 @@ public class minMaxDealer
                         Debug.Log("白棋 移动前棋盘样子" + " 白棋现存个数： " + _blackPieces.Count + "\n");
                         printCurrentBoardToConsole();
 
+                        BoardManager.Instance.selectedChessman = cm;
                         BoardManager.Instance.MoveChessEssenceLogic((int)move.x, (int)move.y);
                         // update score
                         Debug.Log(format+"白11111");
@@ -261,13 +267,15 @@ public class minMaxDealer
                         Debug.Log(format + "白2222---value" + value + "alpha" + alpha + "beta" + alpha);
                         tempMovesInfo formerTempMovesInfo = currentBoardStateStack.Pop();
 
-                        BoardManager.Instance.Chessmans[(int)cm.CurrentX, (int)cm.CurrentY] = null; // 把原来位置置空
-                        Debug.Log("出错点白1！！！" + "cm.current x:" + cm.CurrentX + "cm.current Y:" + cm.CurrentY);
-                        cm.SetPosition((int)formerTempMovesInfo.currentTrialPieceCoord.x, (int)formerTempMovesInfo.currentTrialPieceCoord.y);
-                        Debug.Log("出错点白2！！！" + "cm.current x:" + cm.CurrentX + "cm.current Y:" + cm.CurrentY);
-                        BoardManager.Instance.selectedChessman = cm;
-                        //BoardManager.Instance.MoveChessEssenceLogic((int)formerTempMovesInfo.currentTrialPieceCoord.x, (int)formerTempMovesInfo.currentTrialPieceCoord.y);
-                        
+                        //BoardManager.Instance.Chessmans[(int)cm.CurrentX, (int)cm.CurrentY] = null; // 把原来位置置空
+                        //Debug.Log("出错点白1！！！" + "cm.current x:" + cm.CurrentX + "cm.current Y:" + cm.CurrentY);
+                        //cm.SetPosition((int)formerTempMovesInfo.currentTrialPieceCoord.x, (int)formerTempMovesInfo.currentTrialPieceCoord.y);
+                        //Debug.Log("出错点白2！！！" + "cm.current x:" + cm.CurrentX + "cm.current Y:" + cm.CurrentY);
+
+                        BoardManager.Instance.selectedChessman = formerTempMovesInfo.currentTrialPiece;
+                        BoardManager.Instance.MoveChessBackEssenceLogic((int)formerTempMovesInfo.currentTrialPieceCoord.x, (int)formerTempMovesInfo.currentTrialPieceCoord.y);
+                        //BoardManager.Instance.selectedChessman = cm;
+
                         BoardManager.Instance.Chessmans[(int)formerTempMovesInfo.currentTrialPieceCoord.x, (int)formerTempMovesInfo.currentTrialPieceCoord.y] = cm;
                         if (formerTempMovesInfo.pieceGotEaten != null)
                         { // regenerate the eaten piece
@@ -293,6 +301,7 @@ public class minMaxDealer
                             }
                             else if (cm.GetType().ToString() == "Pawn")
                             {
+                                Debug.Log("哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈2");
                                 BoardManager.Instance.SpawnChessman(11, (int)formerTempMovesInfo.movementInfo.x, (int)formerTempMovesInfo.movementInfo.y);
                             }
                         }
@@ -458,7 +467,7 @@ public class minMaxDealer
 
 
 
-    public void printCurrentBoardToConsole() {
+    private void printCurrentBoardToConsole() {
 
         Debug.Log("-----棋盘样子---\n");
         string stringVersion = "";

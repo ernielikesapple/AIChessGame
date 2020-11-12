@@ -12,7 +12,7 @@ public class BoardManager : MonoBehaviour
 
     public Chessman[,] Chessmans { set; get; }  //Chessman array and a property
     public Chessman selectedChessman;
-   
+
     private const float TILE_SIZE = 1.0f;
     private const float TILE_OFFSET = 0.5f;
 
@@ -22,7 +22,7 @@ public class BoardManager : MonoBehaviour
     public List<GameObject> chessmanPrefabs;
     public List<GameObject> activeChessman = new List<GameObject>();
 
-    public int[] EnPassantMove { set; get; }
+    //public int[] EnPassantMove { set; get; }
 
     public bool smartOpponent = false;
     public bool smartOpponentDoingTrials = false;
@@ -47,11 +47,13 @@ public class BoardManager : MonoBehaviour
 
         if (Input.GetMouseButtonDown(0)) // todo: add bool to let this step wait for ai's move finish then allow click
         {
-            if(selectionX >= 0 && selectionY >= 0) 
+            if (selectionX >= 0 && selectionY >= 0)
             {
-                if(selectedChessman == null)
+                if (selectedChessman == null)
                 {
                     //select the chessman
+                    Debug.Log("7\n");
+                    printCurrentBoardToConsole();
                     SelectChessman(selectionX, selectionY);
                 }
                 else
@@ -59,8 +61,17 @@ public class BoardManager : MonoBehaviour
                     //move the chessman
                     // ⚠️： 此时selectionX， selectionY和上面if里的selectionX， selectionY 是不一样的，此时的是有一个棋子被选中后，下次再点击时候的xy
                     MoveChessman(selectionX, selectionY);
+                    Debug.Log("5\n");
+                    printCurrentBoardToConsole();
+
                 }
+                Debug.Log("6\n");
+                printCurrentBoardToConsole();
             }
+            Debug.Log("8\n");
+            printCurrentBoardToConsole();
+           
+
         }
     }
 
@@ -68,7 +79,7 @@ public class BoardManager : MonoBehaviour
     {
         if (Chessmans[x, y] == null) // 选中的位置没有棋子
             return;
-        if (Chessmans[x, y].isWhite != isWhiteTurn)// Once pick a black piece while it is the white turn so that does not work
+        if (Chessmans[x, y].isWhite != isWhiteTurn && smartOpponentDoingTrials == true)// Once pick a black piece while it is the white turn so that does not work
             return;
         allowedMoves = Chessmans[x, y].PossibleMove();  // possible moves is a 8*8 2d array initial value false， 重要🌟：since this function is override by the subchild , so it wont return orginal 8*8 false bool matrix , but a meaning one followed the rules
 
@@ -78,18 +89,33 @@ public class BoardManager : MonoBehaviour
 
     }
 
-    public void MoveChessman(int x,int y)  // 棋子落点坐标
+    public void MoveChessman(int x, int y)  // 棋子落点坐标
     {
+        Debug.Log("--------activechessman 没乱之前---------"+ activeChessman.Count + "--\n");
+
         MoveChessEssenceLogic(x, y);
-        computerMove();
+
+        if (isWhiteTurn == false)
+        {
+            computerMove();
+            Debug.Log("3\n");
+            printCurrentBoardToConsole();
+            Debug.Log("--------activechessman 乱之后---------" + activeChessman.Count + "--\n");
+
+        }
+        Debug.Log("4\n");
+        Debug.Log("--------activechessman 没乱之后---------" + activeChessman.Count + "--\n");
+
+        printCurrentBoardToConsole();
     }
 
-    public void MoveChessEssenceLogic(int x, int y) {
-        Debug.Log(" 最后一次  " + "x, y :" +  x + ", " + y + "allwoed moves : " + allowedMoves[x, y]);
+    public void MoveChessEssenceLogic(int x, int y)
+    {
+
         if (allowedMoves[x, y])
         {
             Chessman c = Chessmans[x, y]; // 落子点
-
+            //
             if (c != null && c.isWhite != isWhiteTurn)
             {
                 //Capture a piece
@@ -104,26 +130,29 @@ public class BoardManager : MonoBehaviour
                 activeChessman.Remove(c.gameObject);
                 Destroy(c.gameObject);
             }
-            //EnPassantMove(The first nove of the black Pawn is two square, then the white Pawn can remove it)
-            if (x == EnPassantMove[0] && y == EnPassantMove[1] && smartOpponentDoingTrials == false && smartOpponent == false)  //出错点！！
-            {
-                //White turn(black Pawn move 2 squares)
-                if (isWhiteTurn)
-                {
-                    c = Chessmans[x, y - 1];
-                    activeChessman.Remove(c.gameObject);
-                    Destroy(c.gameObject);
-                }
-                //Black turn(white Pawn move 2 squares)
-                else
-                {
-                    c = Chessmans[x, y + 1];
-                    activeChessman.Remove(c.gameObject);
-                    Destroy(c.gameObject);
-                }
-            }
-            EnPassantMove[0] = -1;
-            EnPassantMove[1] = -1;
+
+            ////EnPassantMove(The first nove of the black Pawn is two square, then the white Pawn can remove it)
+            //if (x == EnPassantMove[0] && y == EnPassantMove[1] && smartOpponentDoingTrials == false && smartOpponent == false)  //出错点！！
+            //{
+            //    //White turn(black Pawn move 2 squares)
+            //    if (isWhiteTurn)
+            //    {
+            //        c = Chessmans[x, y - 1];
+            //        activeChessman.Remove(c.gameObject);
+            //        Destroy(c.gameObject);
+            //    }
+            //    //Black turn(white Pawn move 2 squares)
+            //    else
+            //    {
+            //        c = Chessmans[x, y + 1];
+            //        activeChessman.Remove(c.gameObject);
+            //        Destroy(c.gameObject);
+            //    }
+            //}
+            //EnPassantMove[0] = -1;
+            //EnPassantMove[1] = -1;
+
+
             if (selectedChessman.GetType() == typeof(Pawn))
             {
                 if (y == 7)  // whit pawn become a queen
@@ -141,20 +170,21 @@ public class BoardManager : MonoBehaviour
                     selectedChessman = Chessmans[x, y];
                 }
 
-                //White Pawn
-                if (selectedChessman.CurrentY == 1 && y == 3 && smartOpponentDoingTrials == false && smartOpponent == false)
-                {
-                    //Possible move of the black Pawn 
-                    EnPassantMove[0] = x;
-                    EnPassantMove[1] = y - 1;
-                }
-                //Black Pawn
-                else if (selectedChessman.CurrentY == 6 && y == 4 && smartOpponentDoingTrials == false && smartOpponent == false)
-                {
-                    //Possible move of the white Pawn
-                    EnPassantMove[0] = x;
-                    EnPassantMove[1] = y + 1;
-                }
+                ////White Pawn
+                //if (selectedChessman.CurrentY == 1 && y == 3 && smartOpponentDoingTrials == false && smartOpponent == false)
+                //{
+                //    //Possible move of the black Pawn 
+                //    EnPassantMove[0] = x;
+                //    EnPassantMove[1] = y - 1;
+                //}
+                ////Black Pawn
+                //else if (selectedChessman.CurrentY == 6 && y == 4 && smartOpponentDoingTrials == false && smartOpponent == false)
+                //{
+                //    //Possible move of the white Pawn
+                //    EnPassantMove[0] = x;
+                //    EnPassantMove[1] = y + 1;
+                //}
+
             }
 
 
@@ -165,33 +195,44 @@ public class BoardManager : MonoBehaviour
                 selectedChessman.SetPosition(x, y);
                 Chessmans[x, y] = selectedChessman;  // 更新当前棋子要移向点的棋子
 
-                Debug.Log("board manager 这边 棋盘上的棋子在" + "坐标x：" + x + "坐标y：" + y +  "更新了棋子名字为：" + Chessmans[x, y].GetType().ToString());
+                Debug.Log("board manager 这边 棋盘上的棋子在" + "坐标x：" + x + "坐标y：" + y + "更新了棋子名字为：" + Chessmans[x, y].GetType().ToString());
             }
-            else { // 正常情况下执行的代码
+            else
+            { // 正常情况下执行的代码
+
+                Debug.Log(" 最后一次1 棋名字： " + selectedChessman.GetType().ToString() + "x, y :" + selectedChessman.CurrentX + ", " + selectedChessman.CurrentY + "allwoed moves : " + allowedMoves[x, y]);
+
                 Chessmans[selectedChessman.CurrentX, selectedChessman.CurrentY] = null;
-                //selectedChessman.transform.position = GetTileCenter(x, y);原本代码
+
+
+
+                selectedChessman.transform.position = GetTileCenter(x, y); //原本代码
+
 
                 selectedChessman.SetPosition(x, y); // todo: nav mesh agent 逻辑 change current logic to nav mesh agent mode
                                                     // todo: add nav mesh agent to selectedChessman
 
+
+                /*
                 NavMeshAgent agent = selectedChessman.GetComponent<NavMeshAgent>();
                 agent.destination = new Vector3(x + 0.5f, 0, y + 0.5f);
 
                 Animator animator = selectedChessman.GetComponent<Animator>();
                 animator.SetBool("walking", true);
-
-
+                */
 
                 Chessmans[x, y] = selectedChessman;
+
+
+            }
+            if (smartOpponentDoingTrials == false)
+            {
+                isWhiteTurn = !isWhiteTurn;
             }
 
-            isWhiteTurn = !isWhiteTurn;
-          
         }
-
         BoardHighlights.Instance.HideHighlights();
         selectedChessman = null;//Select next Chessman
-
     }
 
     private void DrawChessBoard()
@@ -199,7 +240,7 @@ public class BoardManager : MonoBehaviour
         Vector3 widthLine = Vector3.right * 8;
         Vector3 heightLine = Vector3.forward * 8;
 
-        for(int i = 0; i <= 8; i++)
+        for (int i = 0; i <= 8; i++)
         {
             Vector3 start = Vector3.forward * i;
             Debug.DrawLine(start, start + widthLine);
@@ -211,7 +252,7 @@ public class BoardManager : MonoBehaviour
         }
 
         //Draw the selection
-        if(selectionX >= 0 && selectionY >= 0)
+        if (selectionX >= 0 && selectionY >= 0)
         {
             Debug.DrawLine(Vector3.forward * selectionY + Vector3.right * selectionX,
                 Vector3.forward * (selectionY + 1) + Vector3.right * (selectionX + 1));
@@ -220,10 +261,10 @@ public class BoardManager : MonoBehaviour
                 Vector3.forward * selectionY + Vector3.right * (selectionX + 1));
         }
     }
-    
-    public void SpawnChessman(int index, int x,int y)    // index represent chess piece type
+
+    public void SpawnChessman(int index, int x, int y)    // index represent chess piece type
     {
-        GameObject go = Instantiate(chessmanPrefabs[index], GetTileCenter(x,y), Quaternion.identity) as GameObject;
+        GameObject go = Instantiate(chessmanPrefabs[index], GetTileCenter(x, y), Quaternion.identity) as GameObject;
         go.transform.SetParent(transform);
         Chessmans[x, y] = go.GetComponent<Chessman>();
         Chessmans[x, y].SetPosition(x, y);
@@ -234,7 +275,7 @@ public class BoardManager : MonoBehaviour
     {
         activeChessman = new List<GameObject>();
         Chessmans = new Chessman[8, 8];
-        EnPassantMove = new int[2] { -1, -1 };
+        //EnPassantMove = new int[2] { -1, -1 };
 
         //Spawn the white team
 
@@ -257,7 +298,7 @@ public class BoardManager : MonoBehaviour
         SpawnChessman(4, 6, 0);
 
         //Pawns
-       for(int i = 0; i < 8; i++)
+        for (int i = 0; i < 8; i++)
         {
             SpawnChessman(5, i, 1);
         }
@@ -327,24 +368,28 @@ public class BoardManager : MonoBehaviour
         SpawnAllChessmans();
     }
 
-    private void computerMove() {
-
-        isWhiteTurn = !isWhiteTurn;
+    private void computerMove()
+    {
 
         if (!smartOpponent)
         {
             doRandomMove();   // add choose random move or real ai move type
         }
-        else {
+        else
+        {
             doAIMove();
+            Debug.Log("2\n");
+            printCurrentBoardToConsole();
         }
-        isWhiteTurn = !isWhiteTurn;//Black piece turn if white piece has been moved(switch turn)
+        //Black piece turn if white piece has been moved(switch turn)
     }
 
     private void doRandomMove()
     {
+        smartOpponentDoingTrials = true;
         bool moveFinished = false;
-        while (moveFinished != true) {
+        while (moveFinished != true)
+        {
             int movePieceType = Random.Range(0, 5);
             if (movePieceType == 0)  // MOVE KING
             {
@@ -354,10 +399,12 @@ public class BoardManager : MonoBehaviour
                 {
                     int randomMove = Random.Range(1, possibleMovesGrids.Count);
                     randomMove = randomMove - 1;
+                    smartOpponentDoingTrials = false;
                     MoveChessEssenceLogic((int)possibleMovesGrids[randomMove].x, (int)possibleMovesGrids[randomMove].y);
                     moveFinished = true;
                 }
-                else {
+                else
+                {
                     continue;
                 }
             }
@@ -368,6 +415,7 @@ public class BoardManager : MonoBehaviour
                 {
                     int randomMove = Random.Range(1, possibleMovesGrids.Count);
                     randomMove = randomMove - 1;
+                    smartOpponentDoingTrials = false;
                     MoveChessEssenceLogic((int)possibleMovesGrids[randomMove].x, (int)possibleMovesGrids[randomMove].y);
                     moveFinished = true;
                 }
@@ -379,6 +427,7 @@ public class BoardManager : MonoBehaviour
                 {
                     int randomMove = Random.Range(1, possibleMovesGrids.Count);
                     randomMove = randomMove - 1;
+                    smartOpponentDoingTrials = false;
                     MoveChessEssenceLogic((int)possibleMovesGrids[randomMove].x, (int)possibleMovesGrids[randomMove].y);
                     moveFinished = true;
                 }
@@ -394,6 +443,7 @@ public class BoardManager : MonoBehaviour
                 {
                     int randomMove = Random.Range(1, possibleMovesGrids.Count);
                     randomMove = randomMove - 1;
+                    smartOpponentDoingTrials = false;
                     MoveChessEssenceLogic((int)possibleMovesGrids[randomMove].x, (int)possibleMovesGrids[randomMove].y);
                     moveFinished = true;
                 }
@@ -410,6 +460,7 @@ public class BoardManager : MonoBehaviour
                 {
                     int randomMove = Random.Range(1, possibleMovesGrids.Count);
                     randomMove = randomMove - 1;
+                    smartOpponentDoingTrials = false;
                     MoveChessEssenceLogic((int)possibleMovesGrids[randomMove].x, (int)possibleMovesGrids[randomMove].y);
                     moveFinished = true;
                 }
@@ -426,6 +477,7 @@ public class BoardManager : MonoBehaviour
                 {
                     int randomMove = Random.Range(1, possibleMovesGrids.Count);
                     randomMove = randomMove - 1;
+                    smartOpponentDoingTrials = false;
                     MoveChessEssenceLogic((int)possibleMovesGrids[randomMove].x, (int)possibleMovesGrids[randomMove].y);
                     moveFinished = true;
                 }
@@ -436,13 +488,15 @@ public class BoardManager : MonoBehaviour
             }
         }
     }
-    public List<Vector2> chooseArandBlackPieceToMove(string movePieceType) {  // 从randomMove中抽离出来的代码，为了防止重复
+    public List<Vector2> chooseArandBlackPieceToMove(string movePieceType)
+    {  // 从randomMove中抽离出来的代码，为了防止重复
         foreach (GameObject activeChessPiece in activeChessman)
         {
             Chessman cm = activeChessPiece.GetComponent<Chessman>();
             if (cm.isWhite == false) //黑子
             {
-                if (cm.GetType().ToString() == movePieceType) { // 对应的种类的黑子
+                if (cm.GetType().ToString() == movePieceType)
+                { // 对应的种类的黑子
                     int x1 = cm.CurrentX;
                     int y1 = cm.CurrentY;
                     allowedMoves = Chessmans[x1, y1].PossibleMove();  // possible moves is a 8*8 2d array initial value false， 重要🌟：since this function is override by the subchild , so it wont return orginal 8*8 false bool matrix , but a meaning one followed the rules
@@ -465,14 +519,34 @@ public class BoardManager : MonoBehaviour
         }
         return possibleMovesGrids;
     }
-    private void doAIMove() {
+    private void doAIMove()
+    {
 
         smartOpponentDoingTrials = true;
 
         minMaxDealer minMaxDealerForBlackPiece = new minMaxDealer();
         bestMoves bM = minMaxDealerForBlackPiece.minMaxCoreAlgorithm();
 
-        Debug.Log("-----棋盘样子--1-\n");
+        Debug.Log("board manager 这边bestMove 的信息" + "bestMove name" + bM.bestSelectedPiece.GetType().ToString() + "多说一句移动子行x：" + bM.bestSelectedPiece.CurrentX + "多说一句移动子行Y：" + bM.bestSelectedPiece.CurrentY + "bestMove x===" + bM.bestMoveTo.x + "bestMove Y===" + bM.bestMoveTo.y);
+        allowedMoves = bM.bestSelectedPiece.PossibleMove();
+        selectedChessman = bM.bestSelectedPiece; // 核心当前ai玩家要走的棋子坐标，
+
+        smartOpponentDoingTrials = false;
+
+        MoveChessEssenceLogic((int)bM.bestMoveTo.x, (int)bM.bestMoveTo.y); //  主角棋子被ai玩家吃掉的棋子的坐标
+
+        Debug.Log("1\n");
+        printCurrentBoardToConsole();
+
+    }
+
+
+
+
+    private void printCurrentBoardToConsole()
+    {
+
+        Debug.Log("-----棋盘样子---\n");
         string stringVersion = "";
         for (int uu = 7; uu >= 0; uu--)
         {
@@ -496,40 +570,100 @@ public class BoardManager : MonoBehaviour
         Debug.Log(stringVersion);
         Debug.Log("-----棋盘样子---\n");
 
-        Debug.Log("board manager 这边bestMove 的信息" + "bestMove name" + bM.bestSelectedPiece.GetType().ToString() + "多说一句移动子行x：" + bM.bestSelectedPiece.CurrentX + "多说一句移动子行Y：" + "bestMove x===" + bM.bestMoveTo.x + "bestMove Y===" + bM.bestMoveTo.y);
-        allowedMoves = bM.bestSelectedPiece.PossibleMove();
-        selectedChessman = bM.bestSelectedPiece; // 核心当前ai玩家要走的棋子坐标，
+    }
 
-        smartOpponentDoingTrials = false;
 
-        MoveChessEssenceLogic((int)bM.bestMoveTo.x, (int)bM.bestMoveTo.y); //  主角棋子被ai玩家吃掉的棋子的坐标
 
-        Debug.Log("-----棋盘样子-2--\n");
-        string stringVersion1 = "";
-        for (int uu = 7; uu >= 0; uu--)
+
+    public void ReSpawnAllChessmansAccordingToCurrentChessmans(Chessman[,] currentChessmans)
+    {
+        activeChessman = new List<GameObject>();
+        Chessmans = currentChessmans;
+       // EnPassantMove = new int[2] { -1, -1 }; // todo： check 过路兵的逻辑错误
+
+        for (int i = 0; i < 8; i++)
         {
-            for (int yy = 0; yy < 8; yy++)
+            for (int j = 0; j < 8; j++)
             {
-                if (Chessmans[yy, uu] != null)
+                if (Chessmans[i, j] == null)
+                { // 重新respawn的棋盘上某个位置没有没有棋子
+                    Chessman c = Chessmans[i, j];
+                    activeChessman.Remove(c.gameObject);
+                    Destroy(c.gameObject);
+                }
+
+                if (Chessmans[i, j].isWhite)
                 {
-
-                    stringVersion1 += yy.ToString() + " " + uu.ToString() + " " + Chessmans[yy, uu].GetType().ToString() + "       ";
-
+                    if (Chessmans[i, j].GetType() == typeof(King))
+                    {
+                        SpawnChessman(0, i, j);
+                    }
+                    else if (Chessmans[i, j].GetType() == typeof(Queen))
+                    {
+                        SpawnChessman(1, i, j);
+                    }
+                    else if (Chessmans[i, j].GetType() == typeof(Rook))
+                    {
+                        SpawnChessman(2, i, j);
+                    }
+                    else if (Chessmans[i, j].GetType() == typeof(Bishop))
+                    {
+                        SpawnChessman(3, i, j);
+                    }
+                    else if (Chessmans[i, j].GetType() == typeof(Horse))
+                    {
+                        SpawnChessman(4, i, j);
+                    }
+                    else if (Chessmans[i, j].GetType() == typeof(Pawn))
+                    {
+                        SpawnChessman(5, i, j);
+                    }
                 }
                 else
                 {
-
-                    stringVersion1 += yy.ToString() + " " + uu.ToString() + " " + "空子   " + "       ";
+                    // spawn black pieces
+                    if (Chessmans[i, j].GetType() == typeof(King))
+                    {
+                        SpawnChessman(6, i, j);
+                    }
+                    else if (Chessmans[i, j].GetType() == typeof(Queen))
+                    {
+                        SpawnChessman(7, i, j);
+                    }
+                    else if (Chessmans[i, j].GetType() == typeof(Rook))
+                    {
+                        SpawnChessman(8, i, j);
+                    }
+                    else if (Chessmans[i, j].GetType() == typeof(Bishop))
+                    {
+                        SpawnChessman(9, i, j);
+                    }
+                    else if (Chessmans[i, j].GetType() == typeof(Horse))
+                    {
+                        SpawnChessman(10, i, j);
+                    }
+                    else if (Chessmans[i, j].GetType() == typeof(Pawn))
+                    {
+                        SpawnChessman(11, i, j);
+                    }
                 }
 
             }
-            stringVersion1 += "\n";
         }
-        Debug.Log(stringVersion);
-        Debug.Log("-----棋盘样子---\n");
+    }
 
 
 
+    public void MoveChessBackEssenceLogic(int x, int y)
+    {
+
+        Chessmans[selectedChessman.CurrentX, selectedChessman.CurrentY] = null;
+        selectedChessman.transform.position = GetTileCenter(x, y); //原本代码
+        selectedChessman.SetPosition(x, y);
+        Chessmans[x, y] = selectedChessman;  // 更新当前棋子要移向点的棋子
+
+
+        selectedChessman = null;//Select next Chessman
     }
 
 }
