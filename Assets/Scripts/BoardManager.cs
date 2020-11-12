@@ -52,26 +52,15 @@ public class BoardManager : MonoBehaviour
                 if (selectedChessman == null)
                 {
                     //select the chessman
-                    Debug.Log("7\n");
-                    printCurrentBoardToConsole();
                     SelectChessman(selectionX, selectionY);
                 }
                 else
                 {
                     //move the chessman
                     // ⚠️： 此时selectionX， selectionY和上面if里的selectionX， selectionY 是不一样的，此时的是有一个棋子被选中后，下次再点击时候的xy
-                    MoveChessman(selectionX, selectionY);
-                    Debug.Log("5\n");
-                    printCurrentBoardToConsole();
-
+                    MoveChessman(selectionX, selectionY); 
                 }
-                Debug.Log("6\n");
-                printCurrentBoardToConsole();
-            }
-            Debug.Log("8\n");
-            printCurrentBoardToConsole();
-           
-
+            } 
         }
     }
 
@@ -91,22 +80,11 @@ public class BoardManager : MonoBehaviour
 
     public void MoveChessman(int x, int y)  // 棋子落点坐标
     {
-        Debug.Log("--------activechessman 没乱之前---------"+ activeChessman.Count + "--\n");
-
         MoveChessEssenceLogic(x, y);
-
         if (isWhiteTurn == false)
         {
             computerMove();
-            Debug.Log("3\n");
-            printCurrentBoardToConsole();
-            Debug.Log("--------activechessman 乱之后---------" + activeChessman.Count + "--\n");
-
         }
-        Debug.Log("4\n");
-        Debug.Log("--------activechessman 没乱之后---------" + activeChessman.Count + "--\n");
-
-        printCurrentBoardToConsole();
     }
 
     public void MoveChessEssenceLogic(int x, int y)
@@ -541,8 +519,6 @@ public class BoardManager : MonoBehaviour
     }
 
 
-
-
     private void printCurrentBoardToConsole()
     {
 
@@ -571,99 +547,4 @@ public class BoardManager : MonoBehaviour
         Debug.Log("-----棋盘样子---\n");
 
     }
-
-
-
-
-    public void ReSpawnAllChessmansAccordingToCurrentChessmans(Chessman[,] currentChessmans)
-    {
-        activeChessman = new List<GameObject>();
-        Chessmans = currentChessmans;
-       // EnPassantMove = new int[2] { -1, -1 }; // todo： check 过路兵的逻辑错误
-
-        for (int i = 0; i < 8; i++)
-        {
-            for (int j = 0; j < 8; j++)
-            {
-                if (Chessmans[i, j] == null)
-                { // 重新respawn的棋盘上某个位置没有没有棋子
-                    Chessman c = Chessmans[i, j];
-                    activeChessman.Remove(c.gameObject);
-                    Destroy(c.gameObject);
-                }
-
-                if (Chessmans[i, j].isWhite)
-                {
-                    if (Chessmans[i, j].GetType() == typeof(King))
-                    {
-                        SpawnChessman(0, i, j);
-                    }
-                    else if (Chessmans[i, j].GetType() == typeof(Queen))
-                    {
-                        SpawnChessman(1, i, j);
-                    }
-                    else if (Chessmans[i, j].GetType() == typeof(Rook))
-                    {
-                        SpawnChessman(2, i, j);
-                    }
-                    else if (Chessmans[i, j].GetType() == typeof(Bishop))
-                    {
-                        SpawnChessman(3, i, j);
-                    }
-                    else if (Chessmans[i, j].GetType() == typeof(Horse))
-                    {
-                        SpawnChessman(4, i, j);
-                    }
-                    else if (Chessmans[i, j].GetType() == typeof(Pawn))
-                    {
-                        SpawnChessman(5, i, j);
-                    }
-                }
-                else
-                {
-                    // spawn black pieces
-                    if (Chessmans[i, j].GetType() == typeof(King))
-                    {
-                        SpawnChessman(6, i, j);
-                    }
-                    else if (Chessmans[i, j].GetType() == typeof(Queen))
-                    {
-                        SpawnChessman(7, i, j);
-                    }
-                    else if (Chessmans[i, j].GetType() == typeof(Rook))
-                    {
-                        SpawnChessman(8, i, j);
-                    }
-                    else if (Chessmans[i, j].GetType() == typeof(Bishop))
-                    {
-                        SpawnChessman(9, i, j);
-                    }
-                    else if (Chessmans[i, j].GetType() == typeof(Horse))
-                    {
-                        SpawnChessman(10, i, j);
-                    }
-                    else if (Chessmans[i, j].GetType() == typeof(Pawn))
-                    {
-                        SpawnChessman(11, i, j);
-                    }
-                }
-
-            }
-        }
-    }
-
-
-
-    public void MoveChessBackEssenceLogic(int x, int y)
-    {
-
-        Chessmans[selectedChessman.CurrentX, selectedChessman.CurrentY] = null;
-        selectedChessman.transform.position = GetTileCenter(x, y); //原本代码
-        selectedChessman.SetPosition(x, y);
-        Chessmans[x, y] = selectedChessman;  // 更新当前棋子要移向点的棋子
-
-
-        selectedChessman = null;//Select next Chessman
-    }
-
 }
