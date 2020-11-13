@@ -17,11 +17,11 @@ public class minMaxDealer
     Stack<tempMovesInfo> currentBoardStateStack = new Stack<tempMovesInfo>();
     fakeBoardManager fakeBoardManagerIns = new fakeBoardManager();
 
-    public bestMoves minMaxCoreAlgorithm(BoardManager currentBoardManagerInfo)
+    public bestMoves minMaxCoreAlgorithm(Chessman[,] currentBoardManagerChessmans, Chessman currentSelectedPiece)
     {
-
-        fakeBoardManagerIns.Chessmans = currentBoardManagerInfo.Chessmans; // get current board real information
-        fakeBoardManagerIns.selectedChessman = currentBoardManagerInfo.selectedChessman;
+      
+        fakeBoardManagerIns.Chessmans = currentBoardManagerChessmans; // get current board real information
+        fakeBoardManagerIns.selectedChessman = currentSelectedPiece;
 
         bestMoves bestMove = new bestMoves();
         bestMove = AB(0, -100000000, 1000000000, true, bestMove);
@@ -60,9 +60,9 @@ public class minMaxDealer
             {
                 Chessman cm = _blackPieces[zz];
                 Debug.Log(format+"黑棋规格1===:"+ _blackPieces.Count);
-                fakeBoardManager.Instance.allowedMoves = fakeBoardManager.Instance.Chessmans[cm.CurrentX, cm.CurrentY].PossibleMove();
+                fakeBoardManagerIns.allowedMoves = fakeBoardManagerIns.Chessmans[cm.CurrentX, cm.CurrentY].PossibleMove();
 
-                fakeBoardManager.Instance.selectedChessman = cm;
+                fakeBoardManagerIns.selectedChessman = cm;
                 Debug.Log(format+"递归层数" + depth + "ab当前黑棋外层 选中棋子" + cm.GetType().ToString() + "坐标x：" + cm.CurrentX + "坐标y：" + cm.CurrentY);
                 if (depth == 0)
                 {
@@ -79,7 +79,7 @@ public class minMaxDealer
                 {
                     for (int j = 0; j < 8; j++)
                     {
-                        if (fakeBoardManager.Instance.allowedMoves[i, j])
+                        if (fakeBoardManagerIns.allowedMoves[i, j])
                         {
                             possibleMovesGrids.Add(new Vector2(i, j)); // 查看当前棋子有没有可以走的地方
                         }
@@ -107,8 +107,8 @@ public class minMaxDealer
                         currentTempMovesInfo.currentTrialPiece = cm;
                         currentTempMovesInfo.currentTrialPieceCoord = new Vector2(cm.CurrentX, cm.CurrentY);
                         currentTempMovesInfo.movementInfo = move;
-                        if ( fakeBoardManager.Instance.Chessmans[(int)move.x,(int)move.y] != null) {
-                            currentTempMovesInfo.pieceGotEaten = fakeBoardManager.Instance.Chessmans[(int)move.x, (int)move.y].GetType().ToString();
+                        if ( fakeBoardManagerIns.Chessmans[(int)move.x,(int)move.y] != null) {
+                            currentTempMovesInfo.pieceGotEaten = fakeBoardManagerIns.Chessmans[(int)move.x, (int)move.y].GetType().ToString();
                         }                        
 
                         currentBoardStateStack.Push(currentTempMovesInfo);
@@ -119,8 +119,8 @@ public class minMaxDealer
                         Debug.Log("黑棋 移动前棋盘样子" + " 黑棋现存个数： " + _blackPieces.Count + "\n");
                         printCurrentBoardToConsole();
 
-                        fakeBoardManager.Instance.selectedChessman = cm;
-                        fakeBoardManager.Instance.MoveChessEssenceLogic((int)move.x, (int)move.y);
+                        fakeBoardManagerIns.selectedChessman = cm;
+                        fakeBoardManagerIns.MoveChessEssenceLogic((int)move.x, (int)move.y);
                         // update score
                         Debug.Log(format+"黑11111棋盘当前在x， y是：" + cm.CurrentX + "," + cm.CurrentY);
 
@@ -137,46 +137,46 @@ public class minMaxDealer
 
                         tempMovesInfo formerTempMovesInfo = currentBoardStateStack.Pop();
 
-                        //fakeBoardManager.Instance.Chessmans[(int)cm.CurrentX, (int)cm.CurrentY] = null; // 把原来位置置空
+                        //fakeBoardManagerIns.Chessmans[(int)cm.CurrentX, (int)cm.CurrentY] = null; // 把原来位置置空
                         //Debug.Log("黑棋前一步移动过的棋子的位置坐标x:" + (int)cm.CurrentX + "Y:" + (int)cm.CurrentY);
                         //cm.SetPosition((int)formerTempMovesInfo.currentTrialPieceCoord.x, (int)formerTempMovesInfo.currentTrialPieceCoord.y);
 
-                        fakeBoardManager.Instance.selectedChessman = formerTempMovesInfo.currentTrialPiece;
-                        fakeBoardManager.Instance.MoveChessBackEssenceLogic((int)formerTempMovesInfo.currentTrialPieceCoord.x, (int)formerTempMovesInfo.currentTrialPieceCoord.y);
-                        //fakeBoardManager.Instance.selectedChessman = cm;
+                        fakeBoardManagerIns.selectedChessman = formerTempMovesInfo.currentTrialPiece;
+                        fakeBoardManagerIns.MoveChessBackEssenceLogic((int)formerTempMovesInfo.currentTrialPieceCoord.x, (int)formerTempMovesInfo.currentTrialPieceCoord.y);
+                        //fakeBoardManagerIns.selectedChessman = cm;
 
-                        fakeBoardManager.Instance.Chessmans[(int)formerTempMovesInfo.currentTrialPieceCoord.x, (int)formerTempMovesInfo.currentTrialPieceCoord.y] = cm;
+                        fakeBoardManagerIns.Chessmans[(int)formerTempMovesInfo.currentTrialPieceCoord.x, (int)formerTempMovesInfo.currentTrialPieceCoord.y] = cm;
                         if (formerTempMovesInfo.pieceGotEaten != null)  // regenerate the eaten piece //   after undo fake move， and check if there is another piece then put it back
                         {
                             if (cm.GetType().ToString() == "King") 
                             {
-                                fakeBoardManager.Instance.SpawnChessman(0, (int)formerTempMovesInfo.movementInfo.x, (int)formerTempMovesInfo.movementInfo.y);
+                                fakeBoardManagerIns.SpawnChessman(0, (int)formerTempMovesInfo.movementInfo.x, (int)formerTempMovesInfo.movementInfo.y);
                             }
                             else if (cm.GetType().ToString() == "Queen")
                             {
-                                fakeBoardManager.Instance.SpawnChessman(1, (int)formerTempMovesInfo.movementInfo.x, (int)formerTempMovesInfo.movementInfo.y);
+                                fakeBoardManagerIns.SpawnChessman(1, (int)formerTempMovesInfo.movementInfo.x, (int)formerTempMovesInfo.movementInfo.y);
                             }
                             else if (cm.GetType().ToString() == "Rook")
                             {
-                                fakeBoardManager.Instance.SpawnChessman(2, (int)formerTempMovesInfo.movementInfo.x, (int)formerTempMovesInfo.movementInfo.y);
+                                fakeBoardManagerIns.SpawnChessman(2, (int)formerTempMovesInfo.movementInfo.x, (int)formerTempMovesInfo.movementInfo.y);
                             }
                             else if (cm.GetType().ToString() == "Bishop")
                             {
-                                fakeBoardManager.Instance.SpawnChessman(3, (int)formerTempMovesInfo.movementInfo.x, (int)formerTempMovesInfo.movementInfo.y);
+                                fakeBoardManagerIns.SpawnChessman(3, (int)formerTempMovesInfo.movementInfo.x, (int)formerTempMovesInfo.movementInfo.y);
                             }
                             else if (cm.GetType().ToString() == "Horse")
                             {
-                                fakeBoardManager.Instance.SpawnChessman(4, (int)formerTempMovesInfo.movementInfo.x, (int)formerTempMovesInfo.movementInfo.y);
+                                fakeBoardManagerIns.SpawnChessman(4, (int)formerTempMovesInfo.movementInfo.x, (int)formerTempMovesInfo.movementInfo.y);
                             }
                             else if (cm.GetType().ToString() == "Pawn")
                             {
                                 Debug.Log("哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈2");
 
-                                fakeBoardManager.Instance.SpawnChessman(5, (int)formerTempMovesInfo.movementInfo.x, (int)formerTempMovesInfo.movementInfo.y);
+                                fakeBoardManagerIns.SpawnChessman(5, (int)formerTempMovesInfo.movementInfo.x, (int)formerTempMovesInfo.movementInfo.y);
                             }
                         }
 
-                        Debug.Log(format+"黑333 棋盘当前在x， y  (" + cm.CurrentX +"," + cm.CurrentY +") 上的棋子名字是" + fakeBoardManager.Instance.Chessmans[cm.CurrentX, cm.CurrentY].GetType().ToString());
+                        Debug.Log(format+"黑333 棋盘当前在x， y  (" + cm.CurrentX +"," + cm.CurrentY +") 上的棋子名字是" + fakeBoardManagerIns.Chessmans[cm.CurrentX, cm.CurrentY].GetType().ToString());
 
                         Debug.Log("黑棋 复盘后 棋盘样子" + " 黑棋现存个数： " + _blackPieces.Count + "\n");
                         printCurrentBoardToConsole();
@@ -209,8 +209,8 @@ public class minMaxDealer
                 Chessman cm = _whitePieces[zzw];
                 Debug.Log(format+"递归层数" + depth+ "ab当前白棋外层 选中棋子" + cm.GetType().ToString() + "坐标x：" + cm.CurrentX + "坐标y：" + cm.CurrentY);
 
-                fakeBoardManager.Instance.allowedMoves = fakeBoardManager.Instance.Chessmans[cm.CurrentX, cm.CurrentY].PossibleMove();
-                fakeBoardManager.Instance.selectedChessman = cm;
+                fakeBoardManagerIns.allowedMoves = fakeBoardManagerIns.Chessmans[cm.CurrentX, cm.CurrentY].PossibleMove();
+                fakeBoardManagerIns.selectedChessman = cm;
 
                 bestMove.bestSelectedPiece = bestmoveInfoForEachNode.bestSelectedPiece;// 记录第0层选中的黑棋
                
@@ -220,7 +220,7 @@ public class minMaxDealer
                 {
                     for (int j = 0; j < 8; j++)
                     {
-                        if (fakeBoardManager.Instance.allowedMoves[i, j])
+                        if (fakeBoardManagerIns.allowedMoves[i, j])
                         {
                             possibleMovesGrids.Add(new Vector2(i, j)); // 查看当前棋子有没有可以走的地方
                         }
@@ -243,17 +243,17 @@ public class minMaxDealer
                         Debug.Log("出错点白3！！！" + "cm.current x:" + cm.CurrentX + "cm.current Y:" + cm.CurrentY);
                         currentTempMovesInfo.currentTrialPieceCoord = new Vector2(cm.CurrentX, cm.CurrentY);
                         currentTempMovesInfo.movementInfo = move;
-                        if (fakeBoardManager.Instance.Chessmans[(int)move.x, (int)move.y] != null)
+                        if (fakeBoardManagerIns.Chessmans[(int)move.x, (int)move.y] != null)
                         {
-                            currentTempMovesInfo.pieceGotEaten = fakeBoardManager.Instance.Chessmans[(int)move.x, (int)move.y].GetType().ToString();
+                            currentTempMovesInfo.pieceGotEaten = fakeBoardManagerIns.Chessmans[(int)move.x, (int)move.y].GetType().ToString();
                         }
                         currentBoardStateStack.Push(currentTempMovesInfo);
 
                         Debug.Log("白棋 移动前棋盘样子" + " 白棋现存个数： " + _blackPieces.Count + "\n");
                         printCurrentBoardToConsole();
 
-                        fakeBoardManager.Instance.selectedChessman = cm;
-                        fakeBoardManager.Instance.MoveChessEssenceLogic((int)move.x, (int)move.y);
+                        fakeBoardManagerIns.selectedChessman = cm;
+                        fakeBoardManagerIns.MoveChessEssenceLogic((int)move.x, (int)move.y);
                         // update score
                         Debug.Log(format+"白11111");
 
@@ -272,42 +272,42 @@ public class minMaxDealer
                         Debug.Log(format + "白2222---value" + value + "alpha" + alpha + "beta" + alpha);
                         tempMovesInfo formerTempMovesInfo = currentBoardStateStack.Pop();
 
-                        //fakeBoardManager.Instance.Chessmans[(int)cm.CurrentX, (int)cm.CurrentY] = null; // 把原来位置置空
+                        //fakeBoardManagerIns.Chessmans[(int)cm.CurrentX, (int)cm.CurrentY] = null; // 把原来位置置空
                         //Debug.Log("出错点白1！！！" + "cm.current x:" + cm.CurrentX + "cm.current Y:" + cm.CurrentY);
                         //cm.SetPosition((int)formerTempMovesInfo.currentTrialPieceCoord.x, (int)formerTempMovesInfo.currentTrialPieceCoord.y);
                         //Debug.Log("出错点白2！！！" + "cm.current x:" + cm.CurrentX + "cm.current Y:" + cm.CurrentY);
 
-                        fakeBoardManager.Instance.selectedChessman = formerTempMovesInfo.currentTrialPiece;
-                        fakeBoardManager.Instance.MoveChessBackEssenceLogic((int)formerTempMovesInfo.currentTrialPieceCoord.x, (int)formerTempMovesInfo.currentTrialPieceCoord.y);
-                        //fakeBoardManager.Instance.selectedChessman = cm;
+                        fakeBoardManagerIns.selectedChessman = formerTempMovesInfo.currentTrialPiece;
+                        fakeBoardManagerIns.MoveChessBackEssenceLogic((int)formerTempMovesInfo.currentTrialPieceCoord.x, (int)formerTempMovesInfo.currentTrialPieceCoord.y);
+                        //fakeBoardManagerIns.selectedChessman = cm;
 
-                        fakeBoardManager.Instance.Chessmans[(int)formerTempMovesInfo.currentTrialPieceCoord.x, (int)formerTempMovesInfo.currentTrialPieceCoord.y] = cm;
+                        fakeBoardManagerIns.Chessmans[(int)formerTempMovesInfo.currentTrialPieceCoord.x, (int)formerTempMovesInfo.currentTrialPieceCoord.y] = cm;
                         if (formerTempMovesInfo.pieceGotEaten != null)
                         { // regenerate the eaten piece
                             if (cm.GetType().ToString() == "King")
                             {
-                                fakeBoardManager.Instance.SpawnChessman(6, (int)formerTempMovesInfo.movementInfo.x, (int)formerTempMovesInfo.movementInfo.y);
+                                fakeBoardManagerIns.SpawnChessman(6, (int)formerTempMovesInfo.movementInfo.x, (int)formerTempMovesInfo.movementInfo.y);
                             }
                             else if (cm.GetType().ToString() == "Queen")
                             {
-                                fakeBoardManager.Instance.SpawnChessman(7, (int)formerTempMovesInfo.movementInfo.x, (int)formerTempMovesInfo.movementInfo.y);
+                                fakeBoardManagerIns.SpawnChessman(7, (int)formerTempMovesInfo.movementInfo.x, (int)formerTempMovesInfo.movementInfo.y);
                             }
                             else if (cm.GetType().ToString() == "Rook")
                             {
-                                fakeBoardManager.Instance.SpawnChessman(8, (int)formerTempMovesInfo.movementInfo.x, (int)formerTempMovesInfo.movementInfo.y);
+                                fakeBoardManagerIns.SpawnChessman(8, (int)formerTempMovesInfo.movementInfo.x, (int)formerTempMovesInfo.movementInfo.y);
                             }
                             else if (cm.GetType().ToString() == "Bishop")
                             {
-                                fakeBoardManager.Instance.SpawnChessman(9, (int)formerTempMovesInfo.movementInfo.x, (int)formerTempMovesInfo.movementInfo.y);
+                                fakeBoardManagerIns.SpawnChessman(9, (int)formerTempMovesInfo.movementInfo.x, (int)formerTempMovesInfo.movementInfo.y);
                             }
                             else if (cm.GetType().ToString() == "Horse")
                             {
-                                fakeBoardManager.Instance.SpawnChessman(10, (int)formerTempMovesInfo.movementInfo.x, (int)formerTempMovesInfo.movementInfo.y);
+                                fakeBoardManagerIns.SpawnChessman(10, (int)formerTempMovesInfo.movementInfo.x, (int)formerTempMovesInfo.movementInfo.y);
                             }
                             else if (cm.GetType().ToString() == "Pawn")
                             {
                                 Debug.Log("哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈2");
-                                fakeBoardManager.Instance.SpawnChessman(11, (int)formerTempMovesInfo.movementInfo.x, (int)formerTempMovesInfo.movementInfo.y);
+                                fakeBoardManagerIns.SpawnChessman(11, (int)formerTempMovesInfo.movementInfo.x, (int)formerTempMovesInfo.movementInfo.y);
                             }
                         }
 
@@ -341,106 +341,109 @@ public class minMaxDealer
         _whiteScore = 0;
 
 
-        foreach (Chessman cm in fakeBoardManager.Instance.Chessmans)  // fakeBoardManager.Instance.activeChessman use the real board chess man to move around and check
+        foreach (Chessman cm in fakeBoardManagerIns.Chessmans)  // fakeBoardManagerIns.activeChessman use the real board chess man to move around and check
         {
-            if (cm.isWhite == false) //黑子
+            if (cm != null)
             {
-                if (cm.GetType().ToString() == "King")
+                if (cm.isWhite == false) //黑子
                 {
-                    int x1 = cm.CurrentX;
-                    int y1 = cm.CurrentY;
+                    if (cm.GetType().ToString() == "King")
+                    {
+                        int x1 = cm.CurrentX;
+                        int y1 = cm.CurrentY;
 
-                    // calculate the score for black part
+                        // calculate the score for black part
 
-                    _blackScore += 1000000;
-                    _blackPieces.Add(cm);
-                }
-                else if (cm.GetType().ToString() == "Queen")
-                {
-                    int x1 = cm.CurrentX;
-                    int y1 = cm.CurrentY;
+                        _blackScore += 1000000;
+                        _blackPieces.Add(cm);
+                    }
+                    else if (cm.GetType().ToString() == "Queen")
+                    {
+                        int x1 = cm.CurrentX;
+                        int y1 = cm.CurrentY;
 
-                    _blackScore += 9;
-                    _blackPieces.Add(cm);
-                }
-                else if (cm.GetType().ToString() == "Rook")
-                {
-                    int x1 = cm.CurrentX;
-                    int y1 = cm.CurrentY;
-                    _blackScore += 5;
-                    _blackPieces.Add(cm);
+                        _blackScore += 9;
+                        _blackPieces.Add(cm);
+                    }
+                    else if (cm.GetType().ToString() == "Rook")
+                    {
+                        int x1 = cm.CurrentX;
+                        int y1 = cm.CurrentY;
+                        _blackScore += 5;
+                        _blackPieces.Add(cm);
+
+                    }
+                    else if (cm.GetType().ToString() == "Bishop")
+                    {
+                        int x1 = cm.CurrentX;
+                        int y1 = cm.CurrentY;
+
+                        _blackScore += 3;
+                        _blackPieces.Add(cm);
+
+                    }
+                    else if (cm.GetType().ToString() == "Horse")
+                    {
+                        int x1 = cm.CurrentX;
+                        int y1 = cm.CurrentY;
+                        _blackScore += 3;
+                        _blackPieces.Add(cm);
+                    }
+                    else if (cm.GetType().ToString() == "Pawn")
+                    {
+                        int x1 = cm.CurrentX;
+                        int y1 = cm.CurrentY;
+
+                        _blackScore += 1;
+                        _blackPieces.Add(cm);
+                    }
 
                 }
-                else if (cm.GetType().ToString() == "Bishop")
+                else // 对应的种类的白子
                 {
-                    int x1 = cm.CurrentX;
-                    int y1 = cm.CurrentY;
-
-                    _blackScore += 3;
-                    _blackPieces.Add(cm);
-
-                }
-                else if (cm.GetType().ToString() == "Horse")
-                {
-                    int x1 = cm.CurrentX;
-                    int y1 = cm.CurrentY;
-                    _blackScore += 3;
-                    _blackPieces.Add(cm);
-                }
-                else if (cm.GetType().ToString() == "Pawn")
-                {
-                    int x1 = cm.CurrentX;
-                    int y1 = cm.CurrentY;
-
-                    _blackScore += 1;
-                    _blackPieces.Add(cm);
-                }
-
-            }
-            else // 对应的种类的白子
-            {
-                if (cm.GetType().ToString() == "King")
-                {
-                    int x1 = cm.CurrentX;
-                    int y1 = cm.CurrentY;
-                    // calculate the score for white part
-                    _whiteScore += 1000000;
-                    _whitePieces.Add(cm);
-                }
-                else if (cm.GetType().ToString() == "Queen")
-                {
-                    int x1 = cm.CurrentX;
-                    int y1 = cm.CurrentY;
-                    _whiteScore += 9;
-                    _whitePieces.Add(cm);
-                }
-                else if (cm.GetType().ToString() == "Rook")
-                {
-                    int x1 = cm.CurrentX;
-                    int y1 = cm.CurrentY;
-                    _whiteScore += 5;
-                    _whitePieces.Add(cm);
-                }
-                else if (cm.GetType().ToString() == "Bishop")
-                {
-                    int x1 = cm.CurrentX;
-                    int y1 = cm.CurrentY;
-                    _whiteScore += 3;
-                    _whitePieces.Add(cm);
-                }
-                else if (cm.GetType().ToString() == "Horse")
-                {
-                    int x1 = cm.CurrentX;
-                    int y1 = cm.CurrentY;
-                    _whiteScore += 3;
-                    _whitePieces.Add(cm);
-                }
-                else if (cm.GetType().ToString() == "Pawn")
-                {
-                    int x1 = cm.CurrentX;
-                    int y1 = cm.CurrentY;
-                    _whiteScore += 1;
-                    _whitePieces.Add(cm);
+                    if (cm.GetType().ToString() == "King")
+                    {
+                        int x1 = cm.CurrentX;
+                        int y1 = cm.CurrentY;
+                        // calculate the score for white part
+                        _whiteScore += 1000000;
+                        _whitePieces.Add(cm);
+                    }
+                    else if (cm.GetType().ToString() == "Queen")
+                    {
+                        int x1 = cm.CurrentX;
+                        int y1 = cm.CurrentY;
+                        _whiteScore += 9;
+                        _whitePieces.Add(cm);
+                    }
+                    else if (cm.GetType().ToString() == "Rook")
+                    {
+                        int x1 = cm.CurrentX;
+                        int y1 = cm.CurrentY;
+                        _whiteScore += 5;
+                        _whitePieces.Add(cm);
+                    }
+                    else if (cm.GetType().ToString() == "Bishop")
+                    {
+                        int x1 = cm.CurrentX;
+                        int y1 = cm.CurrentY;
+                        _whiteScore += 3;
+                        _whitePieces.Add(cm);
+                    }
+                    else if (cm.GetType().ToString() == "Horse")
+                    {
+                        int x1 = cm.CurrentX;
+                        int y1 = cm.CurrentY;
+                        _whiteScore += 3;
+                        _whitePieces.Add(cm);
+                    }
+                    else if (cm.GetType().ToString() == "Pawn")
+                    {
+                        int x1 = cm.CurrentX;
+                        int y1 = cm.CurrentY;
+                        _whiteScore += 1;
+                        _whitePieces.Add(cm);
+                    }
                 }
             }
         }
@@ -479,10 +482,10 @@ public class minMaxDealer
         {
             for (int yy = 0; yy < 8; yy++)
             {
-                if (fakeBoardManager.Instance.Chessmans[yy, uu] != null)
+                if (fakeBoardManagerIns.Chessmans[yy, uu] != null)
                 {
 
-                    stringVersion += yy.ToString() + " " + uu.ToString() + " " + fakeBoardManager.Instance.Chessmans[yy, uu].GetType().ToString() + "       ";
+                    stringVersion += yy.ToString() + " " + uu.ToString() + " " + fakeBoardManagerIns.Chessmans[yy, uu].GetType().ToString() + "       ";
 
                 }
                 else

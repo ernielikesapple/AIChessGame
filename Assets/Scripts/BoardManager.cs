@@ -11,7 +11,7 @@ public class BoardManager : MonoBehaviour
     public bool[,] allowedMoves { set; get; }
 
     public Chessman[,] Chessmans { set; get; }  //Chessman array and a property
-    public Chessman selectedChessman;
+    private Chessman selectedChessman;
 
     private const float TILE_SIZE = 1.0f;
     private const float TILE_OFFSET = 0.5f;
@@ -20,7 +20,7 @@ public class BoardManager : MonoBehaviour
     private int selectionY = -1;
 
     public List<GameObject> chessmanPrefabs;
-    public List<GameObject> activeChessman = new List<GameObject>();
+    private List<GameObject> activeChessman = new List<GameObject>();
 
     //public int[] EnPassantMove { set; get; }
 
@@ -28,7 +28,7 @@ public class BoardManager : MonoBehaviour
 
     /*private Quaternion orientation = Quaternion.Euler(0, 0, 0);*/
 
-    public bool isWhiteTurn = true;
+    private bool isWhiteTurn = true;
 
     private void Start()
     {
@@ -65,10 +65,14 @@ public class BoardManager : MonoBehaviour
 
     private void SelectChessman(int x, int y)
     {
-        if (Chessmans[x, y] == null) // 选中的位置没有棋子
+        if (Chessmans[x, y] == null) { // 选中的位置没有棋子
             return;
-        if (Chessmans[x, y].isWhite != isWhiteTurn)// Once pick a black piece while it is the white turn so that does not work
+        }
+
+        if (Chessmans[x, y].isWhite != isWhiteTurn) // Once pick a black piece while it is the white turn so that does not work
+        {
             return;
+        }
         allowedMoves = Chessmans[x, y].PossibleMove();  // possible moves is a 8*8 2d array initial value false， 重要🌟：since this function is override by the subchild , so it wont return orginal 8*8 false bool matrix , but a meaning one followed the rules
 
         selectedChessman = Chessmans[x, y];
@@ -170,13 +174,13 @@ public class BoardManager : MonoBehaviour
             // todo: add nav mesh agent to selectedChessman
 
 
-            /*
-            NavMeshAgent agent = selectedChessman.GetComponent<NavMeshAgent>();
-            agent.destination = new Vector3(x + 0.5f, 0, y + 0.5f);
+            
+            //NavMeshAgent agent = selectedChessman.GetComponent<NavMeshAgent>();
+            //agent.destination = new Vector3(x + 0.5f, 0, y + 0.5f);
 
             Animator animator = selectedChessman.GetComponent<Animator>();
             animator.SetBool("walking", true);
-            */
+            //*/
 
             Chessmans[selectedChessman.CurrentX, selectedChessman.CurrentY] = null;
             selectedChessman.transform.position = GetTileCenter(x, y);
@@ -300,7 +304,7 @@ public class BoardManager : MonoBehaviour
         RaycastHit hit;
         if (Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out hit, LayerMask.GetMask("ChessPlane")))
         {
-            /*Debug.Log(hit.point);*/
+            //Debug.Log(hit.point);
             Debug.DrawLine(Input.mousePosition, hit.point, Color.red);
             selectionX = (int)hit.point.x;
             selectionY = (int)hit.point.z;
@@ -474,7 +478,7 @@ public class BoardManager : MonoBehaviour
     {
 
         minMaxDealer minMaxDealerForBlackPiece = new minMaxDealer();
-        bestMoves bM = minMaxDealerForBlackPiece.minMaxCoreAlgorithm(BoardManager.Instance);
+        bestMoves bM = minMaxDealerForBlackPiece.minMaxCoreAlgorithm(Chessmans, selectedChessman);
 
         Debug.Log("board manager 这边bestMove 的信息" + "bestMove name" + bM.bestSelectedPiece.GetType().ToString() + "多说一句移动子行x：" + bM.bestSelectedPiece.CurrentX + "多说一句移动子行Y：" + bM.bestSelectedPiece.CurrentY + "bestMove x===" + bM.bestMoveTo.x + "bestMove Y===" + bM.bestMoveTo.y);
         allowedMoves = bM.bestSelectedPiece.PossibleMove();
