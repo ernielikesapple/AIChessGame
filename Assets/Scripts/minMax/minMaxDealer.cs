@@ -15,9 +15,14 @@ public class minMaxDealer
     weightMatrix _weight = new weightMatrix();
 
     Stack<tempMovesInfo> currentBoardStateStack = new Stack<tempMovesInfo>();
+    fakeBoardManager fakeBoardManagerIns = new fakeBoardManager();
 
-    public bestMoves minMaxCoreAlgorithm()
+    public bestMoves minMaxCoreAlgorithm(BoardManager currentBoardManagerInfo)
     {
+
+        fakeBoardManagerIns.Chessmans = currentBoardManagerInfo.Chessmans; // get current board real information
+        fakeBoardManagerIns.selectedChessman = currentBoardManagerInfo.selectedChessman;
+
         bestMoves bestMove = new bestMoves();
         bestMove = AB(0, -100000000, 1000000000, true, bestMove);
 
