@@ -29,12 +29,13 @@ public class BoardManager : MonoBehaviour
     /*private Quaternion orientation = Quaternion.Euler(0, 0, 0);*/
 
     private bool isWhiteTurn = true;
-
+    //
+    public AudioSource walking;
+    
     private void Start()
     {
         Instance = this;
         SpawnAllChessmans();
-
 
         smartOpponent = true; // test purpose;
     }
@@ -57,12 +58,15 @@ public class BoardManager : MonoBehaviour
                 {
                     //move the chessman
                     // ⚠️： 此时selectionX， selectionY和上面if里的selectionX， selectionY 是不一样的，此时的是有一个棋子被选中后，下次再点击时候的xy
-                    MoveChessman(selectionX, selectionY); 
+                    MoveChessman(selectionX, selectionY);
+                    walking = GetComponent<AudioSource>();
+                    walking.Play();
                 }
             } 
         }
     }
 
+   
     private void SelectChessman(int x, int y)
     {
         if (Chessmans[x, y] == null) { // 选中的位置没有棋子
@@ -167,34 +171,34 @@ public class BoardManager : MonoBehaviour
                 //}
 
             }
-
-
-
+            Chessmans[selectedChessman.CurrentX, selectedChessman.CurrentY] = null;
             // todo: nav mesh agent 逻辑 change current logic to nav mesh agent mode
             // todo: add nav mesh agent to selectedChessman
-
-
-            
-            //NavMeshAgent agent = selectedChessman.GetComponent<NavMeshAgent>();
-            //agent.destination = new Vector3(x + 0.5f, 0, y + 0.5f);
-
+            Debug.Log(selectedChessman.CurrentX);
+            NavMeshAgent agent = selectedChessman.GetComponent<NavMeshAgent>();
+            agent.SetDestination (new Vector3(x + TILE_OFFSET, 0, y + TILE_OFFSET));
             Animator animator = selectedChessman.GetComponent<Animator>();
+           
             animator.SetBool("walking", true);
-            //*/
+           
+            StartCoroutine(Stop());
+            IEnumerator Stop()
+            {
+                yield return new WaitForSeconds(1.7f);
+                animator.SetBool("walking", false);
+                walking.Stop();
+            }
 
-            Chessmans[selectedChessman.CurrentX, selectedChessman.CurrentY] = null;
-            selectedChessman.transform.position = GetTileCenter(x, y);
+            //selectedChessman.transform.position = GetTileCenter(x, y);
             selectedChessman.SetPosition(x, y);
             Chessmans[x, y] = selectedChessman;
-
-
-
             isWhiteTurn = false;
-            
+
         }
         BoardHighlights.Instance.HideHighlights();
         selectedChessman = null;//Select next Chessman
     }
+
 
     private void DrawChessBoard()
     {
@@ -331,7 +335,8 @@ public class BoardManager : MonoBehaviour
 
     private void computerMove()
     {
-        if (!smartOpponent)
+        Debug.Log("black piece startmove");
+        if (!smartOpponent==false)
         {
             doRandomMove();   // add choose random move or real ai move type
         }
