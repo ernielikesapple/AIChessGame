@@ -37,7 +37,7 @@ public class BoardManager : MonoBehaviour
         Instance = this;
         SpawnAllChessmans();
 
-        smartOpponent = false; // test purpose;
+        smartOpponent = true; // test purpose;
     }
 
     private void Update()
