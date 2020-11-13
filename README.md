@@ -1,5 +1,24 @@
 # AIChessGame
-chess game using min max alpha beta pruning
+
+this is 3D chess game, all the chess pieces are animated and we apply the opponent 
+with min max alpha beta pruning to let it make decisions
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 current known bug
