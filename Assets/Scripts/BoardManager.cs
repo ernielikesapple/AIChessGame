@@ -37,7 +37,7 @@ public class BoardManager : MonoBehaviour
         Instance = this;
         SpawnAllChessmans();
 
-        smartOpponent = true; // test purpose;
+        smartOpponent = false; // test purpose;
     }
 
     private void Update()
@@ -336,7 +336,7 @@ public class BoardManager : MonoBehaviour
     private void computerMove()
     {
         Debug.Log("black piece startmove");
-        if (!smartOpponent==false)
+        if (!smartOpponent)
         {
             doRandomMove();   // add choose random move or real ai move type
         }
