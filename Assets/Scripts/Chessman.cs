@@ -7,7 +7,6 @@ public abstract class Chessman : MonoBehaviour
     public int CurrentX { set; get; }
     public int CurrentY { set; get; }
     public bool isWhite;    //Know which team this piece is part of
-
     public void SetPosition(int x, int y)
     {
         CurrentX = x;
@@ -17,5 +16,12 @@ public abstract class Chessman : MonoBehaviour
     public virtual bool[,] PossibleMove()  // virtual keyword means, this function will be override by the child class to let the child class add more customized functions
     {
         return new bool[8,8];
+    }
+    private void Start()
+    {
+        if(isWhite == false)
+        {
+            transform.Rotate(0, 180, 0);
+        }
     }
 }

@@ -26,14 +26,14 @@ public class BoardManager : MonoBehaviour
 
     public bool smartOpponent = false;
 
-    /*private Quaternion orientation = Quaternion.Euler(0, 0, 0);*/
+    private Quaternion orientation = Quaternion.Euler(0, 0, 0);
 
     private bool isWhiteTurn = true;
     //
-    public AudioSource walking;
-
+    public AudioSource walkingClip;
+    public GameObject chessBoard;
+    public GameObject chessPlane;
     public int maxDepth = 2;
-
 
 
     private void Start()
@@ -63,8 +63,7 @@ public class BoardManager : MonoBehaviour
                     //move the chessman
                     // ⚠️： 此时selectionX， selectionY和上面if里的selectionX， selectionY 是不一样的，此时的是有一个棋子被选中后，下次再点击时候的xy
                     MoveChessman(selectionX, selectionY);
-                    walking = GetComponent<AudioSource>();
-                    walking.Play();
+                    
                 }
             } 
         }
@@ -114,15 +113,30 @@ public class BoardManager : MonoBehaviour
                 {
                     EndGame();
                     //Rerecord the game
+                    walkingClip.Stop();
                     return;
                 }
                 activeChessman.Remove(c.gameObject);
-                Destroy(c.gameObject);
-                Animator animatorExisted = c.GetComponent<Animator>();
+                Destroy(c.gameObject, 2f);
+                StartCoroutine(cDie());
+                IEnumerator cDie()
+                {
+                    yield return new WaitForSeconds(0.4f);
+                    c.GetComponent<Animator>().SetBool("getHurt", true);
+                    AudioSource getHurt = chessPlane.GetComponent<AudioSource>();
+                    getHurt.Play();
+                    yield return new WaitForSeconds(0.8f);
+                    c.GetComponent<Animator>().SetBool("getHurt", false);
+                    c.GetComponent<Animator>().SetBool("die", true);
+                    AudioSource die = chessBoard.GetComponent<AudioSource>();
+                    die.Play();
+                }
+                
+                /*Animator animatorExisted = c.GetComponent<Animator>();
                 if (animatorExisted != null)
                 {
                     Destroy(animatorExisted);
-                }
+                }*/
             }
 
             ////EnPassantMove(The first nove of the black Pawn is two square, then the white Pawn can remove it)
@@ -133,14 +147,14 @@ public class BoardManager : MonoBehaviour
             //    {
             //        c = Chessmans[x, y - 1];
             //        activeChessman.Remove(c.gameObject);
-            //        Destroy(c.gameObject);
+            //        Destroy(c.gameObject,2f);
             //    }
             //    //Black turn(white Pawn move 2 squares)
             //    else
             //    {
             //        c = Chessmans[x, y + 1];
             //        activeChessman.Remove(c.gameObject);
-            //        Destroy(c.gameObject);
+            //        Destroy(c.gameObject，2f);
             //    }
             //}
             //EnPassantMove[0] = -1;
@@ -189,15 +203,24 @@ public class BoardManager : MonoBehaviour
             Animator animator = selectedChessman.GetComponent<Animator>();
            
             animator.SetBool("walking", true);
-           
+            walkingClip = GetComponent<AudioSource>();
+            walkingClip.Play();
+            animator.SetBool("attacking", true);
+            AudioSource attackClip = selectedChessman.GetComponent<AudioSource>();
+            
             StartCoroutine(Stop());
             IEnumerator Stop()
             {
-                yield return new WaitForSeconds(1.7f);
-                if (animator != null) {
+                yield return new WaitForSeconds(1.6f);
+                animator.SetBool("attacking", false);
+                attackClip.Play();
+                /*if (animator != null)
+                {
                     animator.SetBool("walking", false);
-                }
-                walking.Stop();
+
+                }*/
+                animator.SetBool("walking", false);
+                walkingClip.Stop();
             }
 
             //selectedChessman.transform.position = GetTileCenter(x, y);
@@ -240,7 +263,7 @@ public class BoardManager : MonoBehaviour
 
     public void SpawnChessman(int index, int x, int y)    // index represent chess piece type
     {
-        GameObject go = Instantiate(chessmanPrefabs[index], GetTileCenter(x, y), Quaternion.identity) as GameObject;
+        GameObject go = Instantiate(chessmanPrefabs[index], GetTileCenter(x, y), orientation) as GameObject;
         go.transform.SetParent(transform);
         Chessmans[x, y] = go.GetComponent<Chessman>();
         Chessmans[x, y].SetPosition(x, y);

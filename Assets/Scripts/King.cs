@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class King : Chessman
 {
+    public AudioSource attackClip;
     public override bool[,] PossibleMove()
     {
         bool[,] r = new bool[8, 8];

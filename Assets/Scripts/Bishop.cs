@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class Bishop : Chessman
-{   
+{
+    public AudioSource attackClip;
     public override bool[,] PossibleMove()
     {
         bool[,] r = new bool[8, 8];

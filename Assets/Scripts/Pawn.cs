@@ -5,6 +5,7 @@ using UnityEngine;
 
 public class Pawn : Chessman // overridding chess man class to provide additional customized functions
 {
+    public AudioSource attackClip;
     public override bool[,] PossibleMove()
     {
         bool[,] r = new bool[8, 8];
