@@ -5,6 +5,6 @@ using UnityEngine;
 public class bestMoves 
 {
     public int bestScore = -10000000;
-    public Chessman bestSelectedPiece = null;
-    public Vector2 bestMoveTo = Vector2.zero;
+    public Vector2 bestSelectedPieceCoord = new Vector2(-1, -1);
+    public Vector2 bestMoveTo = new Vector2(-1, -1);
 }

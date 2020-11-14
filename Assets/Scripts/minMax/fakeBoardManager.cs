@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class fakeBoardManager 
+public class fakeBoardManager
 {
     public static fakeBoardManager Instance { set; get; }
 
@@ -149,7 +149,7 @@ public class fakeBoardManager
 
 
 
-
+    
     public void SpawnChessman(int index, int x, int y)    // index represent chess piece type
     {
 
@@ -254,6 +254,7 @@ public class fakeBoardManager
 
 
     }
+    
 
 
     private void printCurrentBoardToConsole()

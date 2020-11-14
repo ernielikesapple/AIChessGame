@@ -7,5 +7,5 @@ public class tempMovesInfo
     public Chessman currentTrialPiece = null;
     public Vector2 currentTrialPieceCoord = Vector2.zero;
     public Vector2 movementInfo = Vector2.zero; 
-    public string pieceGotEaten = null;
+    public Chessman pieceGotEaten = null;
 }
