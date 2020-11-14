@@ -26,7 +26,7 @@ public class minMaxDealer
         fakeBoardManager.Instance.Chessmans = currentBoardManagerChessmans; // get current board real information
         fakeBoardManager.Instance.selectedChessman = currentSelectedPiece;
 
-        bestMoveFromMinMax.bestScore = 100000000;
+        bestMoveFromMinMax.bestScore = -100000000;
         AB(0, -100000000, 1000000000, true);
 
         Debug.Log("bestMove 的信息" + "bestMove name" + bestMoveFromMinMax.bestSelectedPiece.GetType().ToString() + "bestMove x===" + bestMoveFromMinMax.bestMoveTo.x + "bestMove Y===" + bestMoveFromMinMax.bestMoveTo.y);
@@ -117,7 +117,8 @@ public class minMaxDealer
                         printCurrentBoardToConsole();
 
                         int value = AB(depth + 1, alpha, beta, false);
-                        
+
+                        Debug.Log("黑棋 移动后棋盘样子 value value value" + value);
 
                         format = format.Substring(0, format.Length - formatq.Length);
 
@@ -130,7 +131,7 @@ public class minMaxDealer
                         fakeBoardManager.Instance.selectedChessman = formerTempMovesInfo.currentTrialPiece;
 
                         fakeBoardManager.Instance.MoveChessBackEssenceLogic((int)formerTempMovesInfo.currentTrialPieceCoord.x, (int)formerTempMovesInfo.currentTrialPieceCoord.y);
-                        fakeBoardManager.Instance.selectedChessman = cm;
+                        //fakeBoardManager.Instance.selectedChessman = cm;
 
                         fakeBoardManager.Instance.Chessmans[(int)formerTempMovesInfo.currentTrialPieceCoord.x, (int)formerTempMovesInfo.currentTrialPieceCoord.y] = cm;
                         if (formerTempMovesInfo.pieceGotEaten != null)  // regenerate the eaten piece //   after undo fake move， and check if there is another piece then put it back
@@ -170,16 +171,14 @@ public class minMaxDealer
 
                         bestScoreForMaxNode = Math.Max(bestScoreForMaxNode, value);
 
-                        if (depth == 0 && bestMoveFromMinMax.bestScore <= bestScoreForMaxNode)
+                        if (depth == 0 && bestScoreForMaxNode > bestMoveFromMinMax.bestScore)
                         {
                             bestMoveFromMinMax.bestSelectedPiece = cm;
                             bestMoveFromMinMax.bestMoveTo.x = move.x; // 记录黑棋第零层时，选中黑棋要走向的点的坐标
                             bestMoveFromMinMax.bestMoveTo.y = move.y;
-                        }
-                        else
-                        {
                             bestMoveFromMinMax.bestScore = bestScoreForMaxNode;
                         }
+                        
 
                         alpha = Math.Max(alpha, bestScoreForMaxNode);
 
@@ -273,7 +272,7 @@ public class minMaxDealer
 
                         fakeBoardManager.Instance.selectedChessman = formerTempMovesInfo.currentTrialPiece;
                         fakeBoardManager.Instance.MoveChessBackEssenceLogic((int)formerTempMovesInfo.currentTrialPieceCoord.x, (int)formerTempMovesInfo.currentTrialPieceCoord.y);
-                        fakeBoardManager.Instance.selectedChessman = cm;
+                        //fakeBoardManager.Instance.selectedChessman = cm;
 
                         fakeBoardManager.Instance.Chessmans[(int)formerTempMovesInfo.currentTrialPieceCoord.x, (int)formerTempMovesInfo.currentTrialPieceCoord.y] = cm;
                         if (formerTempMovesInfo.pieceGotEaten != null)
