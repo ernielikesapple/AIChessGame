@@ -155,62 +155,100 @@ public class fakeBoardManager
 
         if (index == 0)
         {
-            Chessmans[x, y] = new King();
+            GameObject go = new GameObject();
+            go.AddComponent<King>();
+            Chessmans[x, y] = go.GetComponent<Chessman>();
+            Chessmans[x, y].SetPosition(x, y);
             Chessmans[x, y].isWhite = true;
         }
         else if (index == 1)
         {
-            Chessmans[x, y] = new Queen();
+            GameObject go = new GameObject();
+            go.AddComponent<Queen>();
+            Chessmans[x, y] = go.GetComponent<Chessman>();
+            Chessmans[x, y].SetPosition(x, y);
             Chessmans[x, y].isWhite = true;
         }
         else if (index == 2)
         {
-            Chessmans[x, y] = new Rook();
+            GameObject go = new GameObject();
+            go.AddComponent<Rook>();
+            Chessmans[x, y] = go.GetComponent<Chessman>();
+            Chessmans[x, y].SetPosition(x, y);
             Chessmans[x, y].isWhite = true;
         }
         else if (index == 3)
         {
-            Chessmans[x, y] = new Bishop();
+            GameObject go = new GameObject();
+            go.AddComponent<Bishop>();
+            Chessmans[x, y] = go.GetComponent<Chessman>();
+            Chessmans[x, y].SetPosition(x, y);
             Chessmans[x, y].isWhite = true;
         }
         else if (index == 4)
         {
-            Chessmans[x, y] = new Horse();
+            GameObject go = new GameObject();
+            go.AddComponent<Horse>();
+            Chessmans[x, y] = go.GetComponent<Chessman>();
+            Chessmans[x, y].SetPosition(x, y);
             Chessmans[x, y].isWhite = true;
         }
         else if (index == 5)
         {
-            Chessmans[x, y] = new Pawn();
+            GameObject go = new GameObject();
+            go.AddComponent<Pawn>();
+            Chessmans[x, y] = go.GetComponent<Chessman>();
+            Chessmans[x, y].SetPosition(x, y);
             Chessmans[x, y].isWhite = true;
         }
         else if (index == 6)
         {
-            Chessmans[x, y] = new King();
+            GameObject go = new GameObject();
+            go.AddComponent<King>();
+            Chessmans[x, y] = go.GetComponent<Chessman>();
+            Chessmans[x, y].SetPosition(x, y);
             Chessmans[x, y].isWhite = false;
         }
         else if (index == 7)
         {
-            Chessmans[x, y] = new Queen();
+            GameObject go = new GameObject();
+            go.AddComponent<Queen>();
+            Chessmans[x, y] = go.GetComponent<Chessman>();
+            Chessmans[x, y].SetPosition(x, y);
             Chessmans[x, y].isWhite = false;
+
         }
         else if (index == 8)
         {
-            Chessmans[x, y] = new Rook();
+            GameObject go = new GameObject();
+            go.AddComponent<Rook>();
+            Chessmans[x, y] = go.GetComponent<Chessman>();
+            Chessmans[x, y].SetPosition(x, y);
             Chessmans[x, y].isWhite = false;
         }
         else if (index == 9)
         {
-            Chessmans[x, y] = new Bishop();
+            GameObject go = new GameObject();
+            go.AddComponent<Bishop>();
+            Chessmans[x, y] = go.GetComponent<Chessman>();
+            Chessmans[x, y].SetPosition(x, y);
             Chessmans[x, y].isWhite = false;
+            
         }
         else if (index == 10)
         {
-            Chessmans[x, y] = new Horse();
+            GameObject go = new GameObject();
+            go.AddComponent<Horse>();
+            Chessmans[x, y] = go.GetComponent<Chessman>();
+            Chessmans[x, y].SetPosition(x, y);
             Chessmans[x, y].isWhite = false;
         }
         else if (index == 11)
         {
-            Chessmans[x, y] = new Pawn();
+            GameObject go = new GameObject();
+            go.AddComponent<Pawn>();
+            Chessmans[x, y] = go.GetComponent<Chessman>();
+            Chessmans[x, y].SetPosition(x, y);
             Chessmans[x, y].isWhite = false;
         }
 

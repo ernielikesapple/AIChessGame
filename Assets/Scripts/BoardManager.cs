@@ -99,7 +99,6 @@ public class BoardManager : MonoBehaviour
 
     public void MoveChessEssenceLogic(int x, int y)
     {
-
         if (allowedMoves[x, y])
         {
             Chessman c = Chessmans[x, y]; // 落子点
@@ -117,26 +116,35 @@ public class BoardManager : MonoBehaviour
                     return;
                 }
                 activeChessman.Remove(c.gameObject);
-                Destroy(c.gameObject, 2f);
+                
                 StartCoroutine(cDie());
                 IEnumerator cDie()
                 {
                     yield return new WaitForSeconds(0.4f);
-                    c.GetComponent<Animator>().SetBool("getHurt", true);
+                    if(c.GetComponent<Animator>() != null)
+                    {
+                        c.GetComponent<Animator>().SetBool("getHurt", true);
+                    }
+                    
+
                     AudioSource getHurt = chessPlane.GetComponent<AudioSource>();
                     getHurt.Play();
                     yield return new WaitForSeconds(0.8f);
-                    c.GetComponent<Animator>().SetBool("getHurt", false);
-                    c.GetComponent<Animator>().SetBool("die", true);
+                    if (c.GetComponent<Animator>() != null)
+                    {
+                        c.GetComponent<Animator>().SetBool("getHurt", false);
+                        c.GetComponent<Animator>().SetBool("die", true);
+                    }
                     AudioSource die = chessBoard.GetComponent<AudioSource>();
                     die.Play();
                 }
-                
-                /*Animator animatorExisted = c.GetComponent<Animator>();
-                if (animatorExisted != null)
-                {
-                    Destroy(animatorExisted);
-                }*/
+
+                Destroy(c.gameObject, 2f);
+                //Animator animatorExisted = c.GetComponent<Animator>();
+                //if (animatorExisted != null)
+                //{
+                //    Destroy(animatorExisted);
+                //}
             }
 
             ////EnPassantMove(The first nove of the black Pawn is two square, then the white Pawn can remove it)
@@ -194,20 +202,26 @@ public class BoardManager : MonoBehaviour
                 //}
 
             }
+            
             Chessmans[selectedChessman.CurrentX, selectedChessman.CurrentY] = null;
-            // todo: nav mesh agent 逻辑 change current logic to nav mesh agent mode
-            // todo: add nav mesh agent to selectedChessman
-            Debug.Log(selectedChessman.CurrentX);
             NavMeshAgent agent = selectedChessman.GetComponent<NavMeshAgent>();
-            agent.SetDestination (new Vector3(x + TILE_OFFSET, 0, y + TILE_OFFSET));
+            if (agent != null) {
+                agent.SetDestination(new Vector3(x + TILE_OFFSET, 0, y + TILE_OFFSET));
+            }
+            
             Animator animator = selectedChessman.GetComponent<Animator>();
-           
-            animator.SetBool("walking", true);
+            if (animator != null)
+            {
+                animator.SetBool("walking", true);
+            }
             walkingClip = GetComponent<AudioSource>();
             walkingClip.Play();
             if (c != null)
             {
-                animator.SetBool("attacking", true);
+                if (animator != null)
+                {
+                    animator.SetBool("attacking", true);
+                }
                 
             }
             AudioSource attackClip = selectedChessman.GetComponent<AudioSource>();
@@ -217,16 +231,25 @@ public class BoardManager : MonoBehaviour
                 yield return new WaitForSeconds(1.6f);
                 if (c != null)
                 {
-                    animator.SetBool("attacking", false);
-                    attackClip.Play();
+                    if (animator != null)
+                    {
+                        animator.SetBool("attacking", false);
+                    }
+                    if(attackClip != null)
+                    {
+                        attackClip.Play();
+                    }
+                    
                 }
-                /*if (animator != null)
+                if (animator != null)
                 {
                     animator.SetBool("walking", false);
-
-                }*/
-                animator.SetBool("walking", false);
-                walkingClip.Stop();
+                    animator.SetBool("walking", false);
+                }
+                if (attackClip != null)
+                {
+                    walkingClip.Stop();
+                }
             }
 
             //selectedChessman.transform.position = GetTileCenter(x, y);
@@ -521,20 +544,12 @@ public class BoardManager : MonoBehaviour
     }
     private void doAIMove()
     {
-
         minMaxDealer minMaxDealerForBlackPiece = new minMaxDealer();
         bestMoves bM = minMaxDealerForBlackPiece.minMaxCoreAlgorithm(Chessmans, selectedChessman, maxDepth);
-
-        Debug.Log("board manager 这边bestMove 的信息" + "bestMove name" + bM.bestSelectedPiece.GetType().ToString() + "多说一句移动子行x：" + bM.bestSelectedPiece.CurrentX + "多说一句移动子行Y：" + bM.bestSelectedPiece.CurrentY + "bestMove x===" + bM.bestMoveTo.x + "bestMove Y===" + bM.bestMoveTo.y);
+        //Debug.Log("board manager 这边bestMove 的信息" + "bestMove name" + bM.bestSelectedPiece.GetType().ToString() + "多说一句移动子行x：" + bM.bestSelectedPiece.CurrentX + "多说一句移动子行Y：" + bM.bestSelectedPiece.CurrentY + "bestMove x===" + bM.bestMoveTo.x + "bestMove Y===" + bM.bestMoveTo.y);
         allowedMoves = bM.bestSelectedPiece.PossibleMove();
-        selectedChessman = bM.bestSelectedPiece; // 核心当前ai玩家要走的棋子坐标，
-
-
+        selectedChessman = Chessmans[bM.bestSelectedPiece.CurrentX, bM.bestSelectedPiece.CurrentY]; // 核心当前ai玩家要走的棋子坐标，
         MoveChessEssenceLogic((int)bM.bestMoveTo.x, (int)bM.bestMoveTo.y); //  主角棋子被ai玩家吃掉的棋子的坐标
-
-        Debug.Log("1\n");
-        printCurrentBoardToConsole();
-
     }
 
 
@@ -564,6 +579,26 @@ public class BoardManager : MonoBehaviour
         }
         Debug.Log(stringVersion);
         Debug.Log("-----棋盘样子---\n");
+
+    }
+
+    private void printAllowedMBoardToConsole()
+    {
+
+        Debug.Log("-----棋盘allowedmoves样子---\n");
+        string stringVersion = "";
+        for (int uu = 7; uu >= 0; uu--)
+        {
+            for (int yy = 0; yy < 8; yy++)
+            {
+                if (allowedMoves != null) {
+                    stringVersion += yy.ToString() + " " + uu.ToString() + " " + allowedMoves[yy, uu] + "       ";
+                }
+            }
+            stringVersion += "\n";
+        }
+        Debug.Log(stringVersion);
+        Debug.Log("-----棋盘allowedmoves样子---\n");
 
     }
 }

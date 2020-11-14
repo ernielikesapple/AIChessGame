@@ -106,7 +106,7 @@ public class minMaxDealer
                         fakeBoardManager.Instance.selectedChessman = cm;
                         fakeBoardManager.Instance.allowedMoves = cm.PossibleMove(); //todo： 是否需要在这里更新？？这行代码有点多余？？
 
-                        Debug.Log("当前选中棋子在尝试不同 possible moves 时候 移动前： allowed move的信息");
+                        Debug.Log("@@@@@@@@@@@@@@@@@@@@@@@@@@@当前选中棋子在尝试不同 possible moves 时候 移动前： allowed move的信息");
                         printAllowedMBoardToConsole();
 
                         fakeBoardManager.Instance.MoveChessEssenceLogic((int)move.x, (int)move.y);
@@ -130,7 +130,7 @@ public class minMaxDealer
                         fakeBoardManager.Instance.selectedChessman = formerTempMovesInfo.currentTrialPiece;
 
                         fakeBoardManager.Instance.MoveChessBackEssenceLogic((int)formerTempMovesInfo.currentTrialPieceCoord.x, (int)formerTempMovesInfo.currentTrialPieceCoord.y);
-                        //fakeBoardManager.Instance.selectedChessman = cm;
+                        fakeBoardManager.Instance.selectedChessman = cm;
 
                         fakeBoardManager.Instance.Chessmans[(int)formerTempMovesInfo.currentTrialPieceCoord.x, (int)formerTempMovesInfo.currentTrialPieceCoord.y] = cm;
                         if (formerTempMovesInfo.pieceGotEaten != null)  // regenerate the eaten piece //   after undo fake move， and check if there is another piece then put it back
@@ -170,7 +170,7 @@ public class minMaxDealer
 
                         bestScoreForMaxNode = Math.Max(bestScoreForMaxNode, value);
 
-                        if (depth == 0 && bestMoveFromMinMax.bestScore < bestScoreForMaxNode)
+                        if (depth == 0 && bestMoveFromMinMax.bestScore <= bestScoreForMaxNode)
                         {
                             bestMoveFromMinMax.bestSelectedPiece = cm;
                             bestMoveFromMinMax.bestMoveTo.x = move.x; // 记录黑棋第零层时，选中黑棋要走向的点的坐标
@@ -273,7 +273,7 @@ public class minMaxDealer
 
                         fakeBoardManager.Instance.selectedChessman = formerTempMovesInfo.currentTrialPiece;
                         fakeBoardManager.Instance.MoveChessBackEssenceLogic((int)formerTempMovesInfo.currentTrialPieceCoord.x, (int)formerTempMovesInfo.currentTrialPieceCoord.y);
-                        //fakeBoardManager.Instance.selectedChessman = cm;
+                        fakeBoardManager.Instance.selectedChessman = cm;
 
                         fakeBoardManager.Instance.Chessmans[(int)formerTempMovesInfo.currentTrialPieceCoord.x, (int)formerTempMovesInfo.currentTrialPieceCoord.y] = cm;
                         if (formerTempMovesInfo.pieceGotEaten != null)
@@ -516,5 +516,7 @@ public class minMaxDealer
         Debug.Log("-----棋盘allowedmoves样子---\n");
 
     }
+
+    
 
 }
