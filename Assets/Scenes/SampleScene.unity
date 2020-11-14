@@ -636,7 +636,7 @@ MonoBehaviour:
   chessBoard: {fileID: 1732922216}
   chessPlane: {fileID: 1802056495}
   maxDepth: 2
-  txt: {fileID: 0}
+  whoWintxt: {fileID: 0}
 --- !u!82 &539730009
 AudioSource:
   m_ObjectHideFlags: 0
@@ -2207,7 +2207,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: New Text
+  m_Text: 'winner is: '
 --- !u!222 &1746281643
 CanvasRenderer:
   m_ObjectHideFlags: 0
