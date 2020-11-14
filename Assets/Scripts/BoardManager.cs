@@ -105,6 +105,7 @@ public class BoardManager : MonoBehaviour
             //
             if (c != null && c.isWhite != isWhiteTurn)
             {
+                
                 //Capture a piece
 
                 //If it is the King
@@ -115,31 +116,40 @@ public class BoardManager : MonoBehaviour
                     walkingClip.Stop();
                     return;
                 }
-                activeChessman.Remove(c.gameObject);
-                
-                StartCoroutine(cDie());
-                IEnumerator cDie()
+                if (smartOpponent == false)
                 {
-                    yield return new WaitForSeconds(0.4f);
-                    if(c.GetComponent<Animator>() != null)
-                    {
-                        c.GetComponent<Animator>().SetBool("getHurt", true);
-                    }
-                    
+                    activeChessman.Remove(c.gameObject);
 
-                    AudioSource getHurt = chessPlane.GetComponent<AudioSource>();
-                    getHurt.Play();
-                    yield return new WaitForSeconds(0.8f);
-                    if (c.GetComponent<Animator>() != null)
+                    StartCoroutine(cDie());
+                    IEnumerator cDie()
                     {
-                        c.GetComponent<Animator>().SetBool("getHurt", false);
-                        c.GetComponent<Animator>().SetBool("die", true);
+                        yield return new WaitForSeconds(0.4f);
+                        if (c.GetComponent<Animator>() != null)
+                        {
+                            c.GetComponent<Animator>().SetBool("getHurt", true);
+                        }
+
+
+                        AudioSource getHurt = chessPlane.GetComponent<AudioSource>();
+                        getHurt.Play();
+                        yield return new WaitForSeconds(0.8f);
+                        if (c.GetComponent<Animator>() != null)
+                        {
+                            c.GetComponent<Animator>().SetBool("getHurt", false);
+                            c.GetComponent<Animator>().SetBool("die", true);
+                        }
+                        AudioSource die = chessBoard.GetComponent<AudioSource>();
+                        die.Play();
                     }
-                    AudioSource die = chessBoard.GetComponent<AudioSource>();
-                    die.Play();
+
+                    Destroy(c.gameObject, 2f);
+                }
+                else {
+                    activeChessman.Remove(c.gameObject);
+                    Destroy(c.gameObject);
                 }
 
-                Destroy(c.gameObject, 2f);
+
                 //Animator animatorExisted = c.GetComponent<Animator>();
                 //if (animatorExisted != null)
                 //{
@@ -204,55 +214,61 @@ public class BoardManager : MonoBehaviour
             }
             
             Chessmans[selectedChessman.CurrentX, selectedChessman.CurrentY] = null;
-            NavMeshAgent agent = selectedChessman.GetComponent<NavMeshAgent>();
-            if (agent != null) {
-                agent.SetDestination(new Vector3(x + TILE_OFFSET, 0, y + TILE_OFFSET));
-            }
-            
-            Animator animator = selectedChessman.GetComponent<Animator>();
-            if (animator != null)
+            if (smartOpponent == false)
             {
-                animator.SetBool("walking", true);
-            }
-            walkingClip = GetComponent<AudioSource>();
-            walkingClip.Play();
-            if (c != null)
-            {
+                NavMeshAgent agent = selectedChessman.GetComponent<NavMeshAgent>();
+                if (agent != null)
+                {
+                    agent.SetDestination(new Vector3(x + TILE_OFFSET, 0, y + TILE_OFFSET));
+                }
+
+                Animator animator = selectedChessman.GetComponent<Animator>();
                 if (animator != null)
                 {
-                    animator.SetBool("attacking", true);
+                    animator.SetBool("walking", true);
                 }
-                
-            }
-            AudioSource attackClip = selectedChessman.GetComponent<AudioSource>();
-            StartCoroutine(Stop());
-            IEnumerator Stop()
-            {
-                yield return new WaitForSeconds(1.6f);
+                walkingClip = GetComponent<AudioSource>();
+                walkingClip.Play();
                 if (c != null)
                 {
                     if (animator != null)
                     {
-                        animator.SetBool("attacking", false);
+                        animator.SetBool("attacking", true);
                     }
-                    if(attackClip != null)
+
+                }
+                AudioSource attackClip = selectedChessman.GetComponent<AudioSource>();
+                StartCoroutine(Stop());
+                IEnumerator Stop()
+                {
+                    yield return new WaitForSeconds(1.6f);
+                    if (c != null)
                     {
-                        attackClip.Play();
+                        if (animator != null)
+                        {
+                            animator.SetBool("attacking", false);
+                        }
+                        if (attackClip != null)
+                        {
+                            attackClip.Play();
+                        }
+
                     }
-                    
-                }
-                if (animator != null)
-                {
-                    animator.SetBool("walking", false);
-                    animator.SetBool("walking", false);
-                }
-                if (attackClip != null)
-                {
-                    walkingClip.Stop();
+                    if (animator != null)
+                    {
+                        animator.SetBool("walking", false);
+                        animator.SetBool("walking", false);
+                    }
+                    if (attackClip != null)
+                    {
+                        walkingClip.Stop();
+                    }
                 }
             }
+            else {
+                selectedChessman.transform.position = GetTileCenter(x, y);
+            }
 
-            //selectedChessman.transform.position = GetTileCenter(x, y);
             selectedChessman.SetPosition(x, y);
             Chessmans[x, y] = selectedChessman;
             isWhiteTurn = false;
