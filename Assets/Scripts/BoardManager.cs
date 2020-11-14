@@ -31,14 +31,18 @@ public class BoardManager : MonoBehaviour
     private bool isWhiteTurn = true;
     //
     public AudioSource walking;
-    
+
+    public int maxDepth = 2;
+
+
+
     private void Start()
     {
         Instance = this;
         SpawnAllChessmans();
 
-        smartOpponent = true; // test purpose;
     }
+
 
     private void Update()
     {
@@ -114,6 +118,11 @@ public class BoardManager : MonoBehaviour
                 }
                 activeChessman.Remove(c.gameObject);
                 Destroy(c.gameObject);
+                Animator animatorExisted = c.GetComponent<Animator>();
+                if (animatorExisted != null)
+                {
+                    Destroy(animatorExisted);
+                }
             }
 
             ////EnPassantMove(The first nove of the black Pawn is two square, then the white Pawn can remove it)
@@ -185,7 +194,9 @@ public class BoardManager : MonoBehaviour
             IEnumerator Stop()
             {
                 yield return new WaitForSeconds(1.7f);
-                animator.SetBool("walking", false);
+                if (animator != null) {
+                    animator.SetBool("walking", false);
+                }
                 walking.Stop();
             }
 
@@ -483,7 +494,7 @@ public class BoardManager : MonoBehaviour
     {
 
         minMaxDealer minMaxDealerForBlackPiece = new minMaxDealer();
-        bestMoves bM = minMaxDealerForBlackPiece.minMaxCoreAlgorithm(Chessmans, selectedChessman);
+        bestMoves bM = minMaxDealerForBlackPiece.minMaxCoreAlgorithm(Chessmans, selectedChessman, maxDepth);
 
         Debug.Log("board manager 这边bestMove 的信息" + "bestMove name" + bM.bestSelectedPiece.GetType().ToString() + "多说一句移动子行x：" + bM.bestSelectedPiece.CurrentX + "多说一句移动子行Y：" + bM.bestSelectedPiece.CurrentY + "bestMove x===" + bM.bestMoveTo.x + "bestMove Y===" + bM.bestMoveTo.y);
         allowedMoves = bM.bestSelectedPiece.PossibleMove();

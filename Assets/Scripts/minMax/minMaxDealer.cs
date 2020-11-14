@@ -2,10 +2,11 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class minMaxDealer
 {
-    int maxDepth = 3; // todo : originally 3, for testing purpose just set 2 temporarily // count from 0
+    int maxDepth = 2; // todo : originally 3, for testing purpose just set 2 temporarily // count from 0
 
     List<Chessman> _blackPieces = new List<Chessman>();   // for a certain round, current left black pieces
     List<Chessman> _whitePieces = new List<Chessman>();   // for a certain round, current left white pieces
@@ -18,8 +19,9 @@ public class minMaxDealer
 
     bestMoves bestMoveFromMinMax = new bestMoves();
 
-    public bestMoves minMaxCoreAlgorithm(Chessman[,] currentBoardManagerChessmans, Chessman currentSelectedPiece)
+    public bestMoves minMaxCoreAlgorithm(Chessman[,] currentBoardManagerChessmans, Chessman currentSelectedPiece, int maxDepthFromBM)
     {
+        maxDepth = maxDepthFromBM;
         fakeBoardManager.Instance = new fakeBoardManager();
         fakeBoardManager.Instance.Chessmans = currentBoardManagerChessmans; // get current board real information
         fakeBoardManager.Instance.selectedChessman = currentSelectedPiece;
@@ -167,7 +169,7 @@ public class minMaxDealer
                         printCurrentBoardToConsole();
 
 
-                        Debug.Log(format + "黑2222---bestValue" + bestScoreForMaxNode + "alpha" + alpha + "beta" + alpha);
+                        Debug.Log(format + "黑2222---bestValue" + bestScoreForMaxNode + "alpha" + alpha + "beta" + beta);
 
                         bestScoreForMaxNode = Math.Max(bestScoreForMaxNode, value);
 
