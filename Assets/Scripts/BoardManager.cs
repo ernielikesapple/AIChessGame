@@ -205,15 +205,21 @@ public class BoardManager : MonoBehaviour
             animator.SetBool("walking", true);
             walkingClip = GetComponent<AudioSource>();
             walkingClip.Play();
-            animator.SetBool("attacking", true);
+            if (c != null)
+            {
+                animator.SetBool("attacking", true);
+                
+            }
             AudioSource attackClip = selectedChessman.GetComponent<AudioSource>();
-            
             StartCoroutine(Stop());
             IEnumerator Stop()
             {
                 yield return new WaitForSeconds(1.6f);
-                animator.SetBool("attacking", false);
-                attackClip.Play();
+                if (c != null)
+                {
+                    animator.SetBool("attacking", false);
+                    attackClip.Play();
+                }
                 /*if (animator != null)
                 {
                     animator.SetBool("walking", false);

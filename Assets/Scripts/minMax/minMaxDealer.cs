@@ -157,8 +157,6 @@ public class minMaxDealer
                             }
                             else if (cm.GetType().ToString() == "Pawn")
                             {
-                                Debug.Log("哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈2");
-
                                 fakeBoardManager.Instance.SpawnChessman(5, (int)formerTempMovesInfo.movementInfo.x, (int)formerTempMovesInfo.movementInfo.y);
                             }
                         }
@@ -167,7 +165,6 @@ public class minMaxDealer
                         
                         Debug.Log("黑棋 复盘后 棋盘样子" + " 黑棋现存个数： " + _blackPieces.Count + "\n");
                         printCurrentBoardToConsole();
-
 
                         Debug.Log(format + "黑2222---bestValue" + bestScoreForMaxNode + "alpha" + alpha + "beta" + beta);
 
@@ -188,7 +185,6 @@ public class minMaxDealer
 
                         if (beta <= alpha)
                         {
-                            Debug.Log("进入break黑");
                             break;
                         }
                         Debug.Log(format+"黑棋规格2===:" + _blackPieces.Count);
@@ -304,7 +300,6 @@ public class minMaxDealer
                             }
                             else if (cm.GetType().ToString() == "Pawn")
                             {
-                                Debug.Log("哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈2");
                                 fakeBoardManager.Instance.SpawnChessman(11, (int)formerTempMovesInfo.movementInfo.x, (int)formerTempMovesInfo.movementInfo.y);
                             }
                         }
@@ -317,7 +312,6 @@ public class minMaxDealer
 
                         if (beta <= alpha)
                         {
-                            Debug.Log("进入break白");
                             break;
                         }
                     }
